@@ -49,8 +49,12 @@ void TLC5940_SetAllDC(uint8_t value);
 void TLC5940_ClockInDC(void);
 #endif // TLC5940_INCLUDE_DC_FUNCS
 
+//debug
+void deinitMCO(void);
+void initMCO(void);
 
-void TLC5940_ClockInGS(void);
+void TLC5940_SendGS_DMARequest(void);
+void TLC5940_UpdateGS(void);
 void TLC5940_Init(void);
 void TLC5940_SetGS(channel_t channel, uint16_t value);
 void TLC5940_SetAllGS(uint16_t value);

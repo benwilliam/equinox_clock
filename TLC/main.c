@@ -154,8 +154,12 @@ int main(void)
 	//initTLC();
 
 	volatile uint16_t value = 0x0000;
-	TLC5940_SetAllGS(0);
+
 	TLC5940_Init();
+	TLC5940_SetAllGS(0x000A);
+	TLC5940_UpdateGS();
+	delay();
+
     while(1)
 
     {
@@ -164,8 +168,10 @@ int main(void)
 //    		TLC5940_ClockInGS();
 
     	value++;
-    	TLC5940_SetAllGS(value);
+    	//TLC5940_SetAllGS(value);
+    	TLC5940_UpdateGS();
     	delay();
+
     	GPIO_ToggleBits(GPIOD, GPIO_Pin_12 << (value%4));
     }
 
