@@ -8,7 +8,7 @@
 #include "misc.h"
 
 #define TLCPORT GPIOA
-//#define GSCLK GPIO_Pin_8 //will be done from timer
+#define GSCLK GPIO_Pin_8 //will be done from timer
 #define BLANK GPIO_Pin_1
 #define VPRG GPIO_Pin_2
 #define XLAT GPIO_Pin_3
@@ -17,8 +17,7 @@
 static volatile uint8_t XLAT_FLAG = 0;
 static volatile uint8_t DC_SCLK_FLAG = 0;
 static volatile uint8_t GS_DATA_FLAG = 0;
-//#define SCLK GPIO_Pin_5 //will be done from SPI2_SCLK
-//#define SIN GPIO_Pin_7 //will be done from SPI2
+static volatile uint8_t REPEAT_FLAG = 0;
 #define pulse(port, pin) do {                       \
                            GPIO_SetBits((port), (pin));  \
                            GPIO_ResetBits((port), (pin));   \
@@ -155,85 +154,87 @@ void TLC5940_SetAllDC(uint8_t value) {
 }
 #endif
 
-//#define SOFTSPIPORT GPIOB
-//#define SCLK GPIO_Pin_13
-//#define MOSI GPIO_Pin_15
-////debug propose
-void shortdelay(void) {
-	for (uint32_t i = 0; i < 100; i++) {
+#define SOFTSPIPORT GPIOB
+#define SCLK GPIO_Pin_13
+#define MOSI GPIO_Pin_15
+//debug propose
+
+void clockindata(void) {
+	static uint16_t GS_Counter = 0;
+	static uint8_t Data_Counter = 0;
+	GS_Counter = 0;
+	Data_Counter = 0;
+
+	GPIO_ResetBits(TLCPORT, BLANK);
+	while (GS_Counter < 4095) {
+		if (Data_Counter > 191) {
+			pulse(TLCPORT, GSCLK);
+			GS_Counter++;
+		} else {
+			for (int8_t i = 0; i < gsDataSize; i++) {
+
+				for (uint8_t bit = 0x80; bit; bit >>= 1){
+					uint8_t temp = gsData[i] & bit;
+					if (temp)
+						GPIO_SetBits(SOFTSPIPORT, MOSI);
+					else
+						GPIO_ResetBits(SOFTSPIPORT, MOSI);
+
+					pulse(SOFTSPIPORT, SCLK);
+					Data_Counter++;
+					pulse(TLCPORT, GSCLK);
+					GS_Counter++;
+				}
+			}
+		}
 
 	}
+	GPIO_SetBits(TLCPORT, BLANK);
+	pulse(TLCPORT, XLAT);
 }
-//void clockindata(void) {
-//	pulse(SOFTSPIPORT, SCLK);
-//	for (int8_t i = gsDataSize-1; i > 0; i--) {
-//		for (int8_t b = 7; b > 0; b--) {
-//			uint8_t temp = gsData[i] >> b;
-//			temp = temp & 0x1;
-//			if(temp)
-//				GPIO_SetBits(SOFTSPIPORT, MOSI);
-//			else
-//				GPIO_ResetBits(SOFTSPIPORT, MOSI);
-//			shortdelay();
-//			GPIO_SetBits(SOFTSPIPORT, SCLK);
-//			shortdelay();
-//			GPIO_ResetBits(SOFTSPIPORT, SCLK);
-//		}
-//	}
-//	GPIO_ResetBits(SOFTSPIPORT, MOSI);
-//	XLAT_FLAG = ENABLE;
-//}
-//
-//
-//void initSoftSPI(void) {
-//	GPIO_InitTypeDef GPIO_InitStructure;
-//	/* Enable GPIO clocks */
-//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-//
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-//
-//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_15;
-//	GPIO_Init(GPIOB, &GPIO_InitStructure);
-//
-//	GPIO_ResetBits(SOFTSPIPORT, GPIO_Pin_13);
-//	GPIO_ResetBits(SOFTSPIPORT, GPIO_Pin_15);
-//}
 
-void TLC5940_UpdateGS(void){
+void initSoftSPI(void) {
+	GPIO_InitTypeDef GPIO_InitStructure;
+	/* Enable GPIO clocks */
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+
+	GPIO_InitStructure.GPIO_Pin = SCLK | MOSI;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	GPIO_ResetBits(SOFTSPIPORT, SCLK);
+	GPIO_ResetBits(SOFTSPIPORT, MOSI);
+}
+
+void TLC5940_UpdateGS(void) {
 	GS_DATA_FLAG = ENABLE;
 }
 void TLC5940_SendGS_DMARequest(void) {
-	//DMA_Cmd(DMA1_Stream4, DISABLE);
 	DMA_SetCurrDataCounter(DMA1_Stream4, gsDataSize);
 	DMA_Cmd(DMA1_Stream4, ENABLE);
-//	clockindata();
 }
 
 void DMA1_Stream4_IRQHandler(void) {
 	DMA_ClearFlag(DMA1_Stream4, DMA_FLAG_TCIF4);
-	//wait until flag is deletet
 	XLAT_FLAG = ENABLE;
 	GS_DATA_FLAG = DISABLE;
-	while(DMA_GetFlagStatus(DMA1_Stream4, DMA_FLAG_TCIF4));
+	while (DMA_GetFlagStatus(DMA1_Stream4, DMA_FLAG_TCIF4))
+		;
 }
 
 void TIM2_IRQHandler(void) {
 	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	GPIO_SetBits(TLCPORT, BLANK);
 	if (XLAT_FLAG) {
-		//pulse(TLCPORT, XLAT);
-		//deinitMCO();
-		GPIO_SetBits(TLCPORT, XLAT);
-		GPIO_ResetBits(TLCPORT, XLAT);
-		//initMCO();
-		XLAT_FLAG = 0;
+		pulse(TLCPORT, XLAT);
+		XLAT_FLAG = DISABLE;
 	}
 	GPIO_ResetBits(TLCPORT, BLANK);
-	if(GS_DATA_FLAG)
-	{
+	if (GS_DATA_FLAG) {
 		TLC5940_SendGS_DMARequest();
 	}
 }
@@ -251,7 +252,7 @@ void initGPIO(void) {
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 
-	GPIO_InitStructure.GPIO_Pin = BLANK | VPRG | XLAT | DCPRG;
+	GPIO_InitStructure.GPIO_Pin = BLANK | VPRG | XLAT | DCPRG | GSCLK;
 	GPIO_Init(TLCPORT, &GPIO_InitStructure);
 }
 
@@ -407,12 +408,11 @@ void TLC5940_Init(void) {
 	GPIO_ResetBits(TLCPORT, DCPRG);
 	GPIO_ResetBits(TLCPORT, VPRG);
 
+//	initSoftSPI();
+
 	initSPI();
 	initDMA();
 	TLC5940_SendGS_DMARequest();
-
-//	initSoftSPI();
-
 	initMCO();
 	initTimer();
 

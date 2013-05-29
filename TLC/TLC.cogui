@@ -23,23 +23,23 @@
 </editorArea>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="TLC5940.h" partName="TLC5940.h" path="D:/GIT/github/TLC/TLC5940.h" title="TLC5940.h" tooltip="D:/GIT/github/TLC/TLC5940.h" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/TLC/TLC5940.h"/>
-<editorState selectionHorizontalPixel="0" selectionLength="16" selectionOffset="1176" selectionTopPixel="316"/>
+<editorState selectionHorizontalPixel="0" selectionLength="16" selectionOffset="1176" selectionTopPixel="331"/>
 </editor>
 <editor activePart="true" focus="true" id="org.eclipse.cdt.ui.editor.CEditor" name="main.c" partName="main.c" path="D:/GIT/github/TLC/main.c" title="main.c" tooltip="D:/GIT/github/TLC/main.c" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/TLC/main.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4346" selectionTopPixel="2091"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="4487" selectionTopPixel="2011"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="system_stm32f4xx.c" partName="system_stm32f4xx.c" path="D:/GIT/github/TLC/cmsis_boot/system_stm32f4xx.c" title="system_stm32f4xx.c" tooltip="D:/GIT/github/TLC/cmsis_boot/system_stm32f4xx.c" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/TLC/cmsis_boot/system_stm32f4xx.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7737" selectionTopPixel="2075"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="7761" selectionTopPixel="2030"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="startup_stm32f4xx.c" partName="startup_stm32f4xx.c" path="D:/GIT/github/TLC/cmsis_boot/startup/startup_stm32f4xx.c" title="startup_stm32f4xx.c" tooltip="D:/GIT/github/TLC/cmsis_boot/startup/startup_stm32f4xx.c" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/TLC/cmsis_boot/startup/startup_stm32f4xx.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="0" selectionTopPixel="0"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="14785" selectionTopPixel="3810"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="TLC5940.c" partName="TLC5940.c" path="D:/GIT/github/TLC/TLC5940.c" title="TLC5940.c" tooltip="D:/GIT/github/TLC/TLC5940.c" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/TLC/TLC5940.c"/>
-<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="9721" selectionTopPixel="3178"/>
+<editorState selectionHorizontalPixel="0" selectionLength="0" selectionOffset="8281" selectionTopPixel="2355"/>
 </editor>
 <editor id="org.eclipse.cdt.ui.editor.CEditor" name="stm32f4xx_tim.h" partName="stm32f4xx_tim.h" path="D:/GIT/github/TLC/cmsis_lib/include/stm32f4xx_tim.h" title="stm32f4xx_tim.h" tooltip="D:/GIT/github/TLC/cmsis_lib/include/stm32f4xx_tim.h" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/TLC/cmsis_lib/include/stm32f4xx_tim.h"/>
@@ -57,7 +57,7 @@
 </viewState>
 </view>
 <view id="org.coocox.builder.ui.views.ProjectView" partName="Project">
-<viewState CommonNavigator.LINKING_ENABLED="0" horizontalPosition="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0" verticalPosition="23">
+<viewState CommonNavigator.LINKING_ENABLED="0" horizontalPosition="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0" verticalPosition="21">
 <expanded>
 <element path="/TLC"/>
 <element path="/TLC/cmsis"/>
@@ -88,10 +88,11 @@
 <viewState/>
 </view>
 <view id="org.coocox.coassistant.view.CoAssistantView_debug" partName="Peripherals">
-<viewState horizontalPosition="0" verticalPosition="31">
-<selection>&#x0A;<element name="GPIOA"/>
+<viewState horizontalPosition="0" verticalPosition="21">
+<selection>
+<element name="GPIOB"/>
 </selection>
-<registerValues baseAddress="Base Address: 0x40020000" description="Description:  General-purpose I/Os"/>
+<registerValues baseAddress="Base Address: 0x40020400" description="Description:  General-purpose I/Os"/>
 </viewState>
 </view>
 <view id="org.eclipse.debug.ui.VariableView" partName="Variables">
@@ -132,7 +133,7 @@
 <fastViewBars>
 <fastViewBar fastViewLocation="1024" id="org.eclipse.ui.internal.ViewStack@16c2e46" orientation="256" selectedTabId="org.eclipse.ui.console.ConsoleView" style="1">
 <fastViews>
-<view id="org.eclipse.ui.console.ConsoleView" ratio="0.30781758"/>
+<view id="org.eclipse.ui.console.ConsoleView" ratio="0.30634922"/>
 </fastViews>
 </fastViewBar>
 </fastViewBars>
@@ -239,8 +240,8 @@
 <hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
 <hide_toolbar_item_id id="org.coocox.builder.ui.build"/>
 <hide_toolbar_item_id id="org.coocox.welcome.ui.action.welcome"/>
-<hide_toolbar_item_id id="org.coocox.component.ui.ShowRepositoryAction"/>
 <hide_toolbar_item_id id="org.coocox.codebugger.configuration.coideProgramDownloadAction"/>
+<hide_toolbar_item_id id="org.coocox.component.ui.ShowRepositoryAction"/>
 <view id="org.coocox.builder.ui.views.ProjectView"/>
 <view id="org.eclipse.ui.console.ConsoleView"/>
 <view id="org.eclipse.debug.ui.DebugView"/>
@@ -251,44 +252,58 @@
 <view id="org.eclipse.debug.ui.ExpressionView"/>
 <fastViewBars/>
 <viewLayoutRec closeable="false" id="org.eclipse.debug.ui.DebugView"/>
-<layout>&#x0A;<mainWindow>&#x0A;<info folder="true" part="org.eclipse.ui.internal.ViewStack@acec43">&#x0A;<folder activePageID="org.eclipse.ui.console.ConsoleView" appearance="2" expanded="2">&#x0A;<page content="org.coocox.builder.ui.views.ProjectView" label="Project"/>
+<layout>
+<mainWindow>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@acec43">
+<folder activePageID="org.eclipse.debug.ui.DebugView" appearance="2" expanded="2">
+<page content="org.coocox.builder.ui.views.ProjectView" label="Project"/>
 <page content="org.eclipse.ui.console.ConsoleView" label="Console"/>
 <page content="org.eclipse.debug.ui.DebugView" label="Debug"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
+<page content="org.coocox.coassistant.view.CoAssistantView_debug" label="Peripherals"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
 <part id="2"/>
 <part id="1"/>
+<part id="3"/>
 </presentation>
 </folder>
 </info>
-<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="978" ratioRight="326" relationship="2" relative="org.eclipse.ui.internal.ViewStack@acec43">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="978" ratioRight="326" relationship="2" relative="org.eclipse.ui.internal.ViewStack@acec43">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@55f038" ratio="0.7" ratioLeft="441" ratioRight="189" relationship="4" relative="org.eclipse.ui.internal.ViewStack@acec43">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.debug.ui.BreakpointView" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@55f038" ratio="0.7" ratioLeft="441" ratioRight="189" relationship="4" relative="org.eclipse.ui.internal.ViewStack@acec43">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.BreakpointView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@1bbfd19" ratio="0.5" ratioLeft="652" ratioRight="652" relationship="2" relative="org.eclipse.ui.internal.ViewStack@55f038">&#x0A;<folder appearance="2" expanded="2">&#x0A;<page content="org.eclipse.debug.ui.MemoryView" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@1bbfd19" ratio="0.5" ratioLeft="652" ratioRight="652" relationship="2" relative="org.eclipse.ui.internal.ViewStack@55f038">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.debug.ui.MemoryView" label="LabelNotFound"/>
 <page content="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@e5ab91" ratio="0.76826566" ratioLeft="1041" ratioRight="314" relationship="2" relative="org.eclipse.ui.internal.ViewStack@acec43">&#x0A;<folder activePageID="org.coocox.coassistant.view.CoAssistantView_debug" appearance="2" expanded="2">&#x0A;<page content="org.coocox.coassistant.view.CoAssistantView_debug" label="Peripherals"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@e5ab91" ratio="0.76826566" ratioLeft="1041" ratioRight="314" relationship="2" relative="org.eclipse.ui.internal.ViewStack@acec43">
+<folder activePageID="org.eclipse.debug.ui.VariableView" appearance="2" expanded="2">
 <page content="org.eclipse.debug.ui.RegisterView" label="Registers"/>
 <page content="org.eclipse.debug.ui.VariableView" label="Variables"/>
 <page content="org.coocox.codebugger.trace.ui.traceview" label="Semihosting"/>
 <page content="org.eclipse.debug.ui.ExpressionView" label="Expressions"/>
 <page content="org.eclipse.cdt.dsf.debug.ui.disassembly.view" label="LabelNotFound"/>
 <page content="org.eclipse.ui.views.ContentOutline" label="LabelNotFound"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">&#x0A;<part id="0"/>
-<part id="1"/>
-<part id="3"/>
-<part id="4"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
 <part id="2"/>
+<part id="3"/>
+<part id="1"/>
 </presentation>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.20077972" ratioLeft="206" ratioRight="820" relationship="2" relative="org.eclipse.ui.internal.ViewStack@acec43"/>
+<info part="org.eclipse.ui.editorss" ratio="0.28323698" ratioLeft="294" ratioRight="744" relationship="2" relative="org.eclipse.ui.internal.ViewStack@acec43"/>
 </mainWindow>
 </layout>
 </perspective>
@@ -300,21 +315,96 @@
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/TLC/main.c"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/TLC/cmsis_boot/startup/startup_stm32f4xx.c"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/TLC/cmsis_boot/system_stm32f4xx.c"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/TLC/cmsis_lib/source/stm32f4xx_rcc.c"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/TLC/cmsis_lib/include/stm32f4xx_rcc.h"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.cdt.ui.editor.CEditor" path="/TLC/TLC5940.h"/>
 </editors>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="9816" y="0"/>
+<position info="not_deleted" x="7855" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="16137" y="0"/>
+<position info="not_deleted" x="7885" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="16178" y="0"/>
+<position info="not_deleted" x="7914" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7939" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7941" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7855" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7885" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7914" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7939" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7941" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7855" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="8356" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="8388" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="8412" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="9011" y="0"/>
+</item>
+<item historyLabel="main.c" index="1">
+<position info="not_deleted" x="4519" y="0"/>
+</item>
+<item historyLabel="main.c" index="1">
+<position info="not_deleted" x="4575" y="0"/>
+</item>
+<item historyLabel="main.c" index="1">
+<position info="not_deleted" x="4401" y="0"/>
+</item>
+<item historyLabel="main.c" index="1">
+<position info="not_deleted" x="4491" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="8994" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7821" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7855" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7819" y="0"/>
+</item>
+<item historyLabel="main.c" index="1">
+<position info="not_deleted" x="4372" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7819" y="0"/>
+</item>
+<item historyLabel="main.c" index="1">
+<position info="not_deleted" x="4399" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7817" y="0"/>
+</item>
+<item historyLabel="main.c" index="1">
+<position info="not_deleted" x="4376" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="8337" y="0"/>
 </item>
 <item historyLabel="startup_stm32f4xx.c" index="2">
-<position info="not_deleted" x="0" y="0"/>
+<position info="not_deleted" x="14785" y="0"/>
 </item>
 <item historyLabel="main.c" index="1">
 <position info="not_deleted" x="4199" y="0"/>
@@ -335,124 +425,46 @@
 <position info="not_deleted" x="4348" y="0"/>
 </item>
 <item historyLabel="main.c" index="1">
-<position info="not_deleted" x="4395" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="9198" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="7935" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="7983" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8021" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8058" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8083" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8207" y="0"/>
+<position info="not_deleted" x="4401" y="0"/>
 </item>
 <item historyLabel="main.c" index="1">
-<position info="not_deleted" x="4107" y="71"/>
+<position info="not_deleted" x="4491" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8207" y="0"/>
+<position info="not_deleted" x="8994" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8205" y="0"/>
+<position info="not_deleted" x="7781" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8359" y="0"/>
-</item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="4372" y="0"/>
+<position info="not_deleted" x="7799" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8359" y="0"/>
+<position info="not_deleted" x="7821" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="15693" y="0"/>
+<position info="not_deleted" x="7855" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="15641" y="0"/>
+<position info="not_deleted" x="7885" y="0"/>
+</item>
+<item historyLabel="TLC5940.c" index="0">
+<position info="not_deleted" x="7880" y="0"/>
 </item>
 <item historyLabel="main.c" index="1">
 <position info="not_deleted" x="4372" y="0"/>
 </item>
 <item historyLabel="system_stm32f4xx.c" index="3">
-<position info="not_deleted" x="7737" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="12218" y="14"/>
-</item>
-<item historyLabel="stm32f4xx_rcc.c" index="4">
-<position info="not_deleted" x="24949" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="12218" y="14"/>
-</item>
-<item historyLabel="stm32f4xx_rcc.h" index="5">
-<position info="not_deleted" x="17920" y="13"/>
-</item>
-<item historyLabel="stm32f4xx_rcc.h" index="5">
-<position info="not_deleted" x="17660" y="21"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="12233" y="21"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="11701" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="11698" y="0"/>
-</item>
-<item historyLabel="TLC5940.h" index="6">
-<position info="not_deleted" x="1128" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="11249" y="20"/>
-</item>
-<item historyLabel="TLC5940.h" index="6">
-<position info="not_deleted" x="1114" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="13561" y="0"/>
-</item>
-<item historyLabel="TLC5940.h" index="6">
-<position info="not_deleted" x="1114" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="13561" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="9814" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="9808" y="0"/>
-</item>
-<item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="8977" y="27"/>
-</item>
-<item historyLabel="TLC5940.h" index="6">
-<position info="not_deleted" x="1176" y="16"/>
+<position info="not_deleted" x="7761" y="0"/>
 </item>
 <item historyLabel="main.c" index="1">
-<position info="not_deleted" x="4372" y="0"/>
-</item>
-<item historyLabel="main.c" index="1">
-<position info="not_deleted" x="4554" y="0"/>
+<position info="not_deleted" x="4290" y="0"/>
 </item>
 <item historyLabel="TLC5940.c" index="0">
-<position info="not_deleted" x="9721" y="0"/>
+<position info="not_deleted" x="8281" y="0"/>
 </item>
 <item active="true" historyLabel="main.c" index="1">
-<position info="not_deleted" x="4554" y="0"/>
+<position info="not_deleted" x="4290" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>

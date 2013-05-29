@@ -138,7 +138,7 @@ void LedInit(void)
 //}
 void delay (void)
 {
-	for(uint32_t i = 0; i < 10000; i++)
+	for(uint32_t i = 0; i < 10000000; i++)
 	{
 
 	}
@@ -156,23 +156,32 @@ int main(void)
 	volatile uint16_t value = 0x0000;
 
 	TLC5940_Init();
-	TLC5940_SetAllGS(0x000A);
-	TLC5940_UpdateGS();
-	delay();
+	TLC5940_SetAllGS(0x0000);
 
+	int8_t faktor = 1;
+
+
+#define MAX 4095
+#define MIN 0
+    int16_t count = MIN;
     while(1)
-
     {
-    	//runTLCinGS((value/10));
-//    	for(int i = 0; i<29; i++)
-//    		TLC5940_ClockInGS();
 
-    	value++;
-    	//TLC5940_SetAllGS(value);
-    	TLC5940_UpdateGS();
-    	delay();
+    	//TLC5940_SetAllGS(value/1000);
+    	for( ;(count <= MAX) && (count >= MIN); count += faktor)
+    	{
+			TLC5940_SetGS(14, count);
+			TLC5940_UpdateGS();
 
-    	GPIO_ToggleBits(GPIOD, GPIO_Pin_12 << (value%4));
+			GPIO_ToggleBits(GPIOD, GPIO_Pin_12 << (value%4));
+			value++;
+			delay();
+    	}
+    	faktor = faktor * (-1);
+    	if(count > MIN)
+    		count--;
+    	else
+    		count++;
     }
 
 }

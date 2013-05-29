@@ -1,25 +1,25 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <history>
    <processor signature="4.7.3 -mcpu=cortex-m4 -mthumb -g -nostartfiles -Map=TLC.map -O0 --gc-sections -LC:\CooCox\CoIDE\configuration\ProgramData\TLC -TC:\CooCox\CoIDE\configuration\ProgramData\TLC/arm-gcc-link.ld -g -L..\..\..\STM32F4-Discovery -lpdmfilter_gcc">
-      <target file="TLC.elf" lastModified="13ee7d71183">
-         <source file="..\obj\stm32f4xx_syscfg.o" lastModified="13ee7d6e6cd"/>
-         <source file="..\obj\stm32f4_discovery_audio_codec.o" lastModified="13ee7d6e9f7"/>
-         <source file="..\obj\stm32f4xx_dac.o" lastModified="13ee7d6ec17"/>
-         <source file="..\obj\startup_stm32f4xx.o" lastModified="13ee7d6ed9b"/>
-         <source file="..\obj\stm32f4_discovery.o" lastModified="13ee7d6ef8f"/>
-         <source file="..\obj\main.o" lastModified="13ee7d6f158"/>
-         <source file="..\obj\stm32f4xx_rcc.o" lastModified="13ee7d6f3f4"/>
-         <source file="..\obj\TLC5940.o" lastModified="13ee7d6f63b"/>
-         <source file="..\obj\stm32f4xx_gpio.o" lastModified="13ee7d6f859"/>
-         <source file="..\obj\system_stm32f4xx.o" lastModified="13ee7d6fa3a"/>
-         <source file="..\obj\stm32f4xx_dma.o" lastModified="13ee7d6fc75"/>
-         <source file="..\obj\stm32f4_discovery_callbacks.o" lastModified="13ee7d6fe44"/>
-         <source file="..\obj\stm32f4xx_spi.o" lastModified="13ee7d7009f"/>
-         <source file="..\obj\stm32f4xx_i2c.o" lastModified="13ee7d70314"/>
-         <source file="..\obj\stm32f4xx_exti.o" lastModified="13ee7d704f9"/>
-         <source file="..\obj\misc.o" lastModified="13ee7d706dd"/>
-         <source file="..\obj\stm32f4_discovery_lis302dl.o" lastModified="13ee7d7091e"/>
-         <source file="..\obj\stm32f4xx_tim.o" lastModified="13ee7d70cd2"/>
+      <target file="TLC.elf" lastModified="13ef0275742">
+         <source file="..\obj\stm32f4xx_syscfg.o" lastModified="13eed086f2f"/>
+         <source file="..\obj\stm32f4_discovery_audio_codec.o" lastModified="13eed087036"/>
+         <source file="..\obj\stm32f4xx_dac.o" lastModified="13eed0870e5"/>
+         <source file="..\obj\startup_stm32f4xx.o" lastModified="13eed087168"/>
+         <source file="..\obj\stm32f4_discovery.o" lastModified="13eed08726c"/>
+         <source file="..\obj\main.o" lastModified="13ef0275466"/>
+         <source file="..\obj\stm32f4xx_rcc.o" lastModified="13eed087445"/>
+         <source file="..\obj\TLC5940.o" lastModified="13eed4bc930"/>
+         <source file="..\obj\stm32f4xx_gpio.o" lastModified="13eed0875c4"/>
+         <source file="..\obj\system_stm32f4xx.o" lastModified="13eed3f4e24"/>
+         <source file="..\obj\stm32f4xx_dma.o" lastModified="13eed08771c"/>
+         <source file="..\obj\stm32f4_discovery_callbacks.o" lastModified="13eed0877b5"/>
+         <source file="..\obj\stm32f4xx_spi.o" lastModified="13eed0878b9"/>
+         <source file="..\obj\stm32f4xx_i2c.o" lastModified="13eed0879e6"/>
+         <source file="..\obj\stm32f4xx_exti.o" lastModified="13eed087aa3"/>
+         <source file="..\obj\misc.o" lastModified="13eed087b3e"/>
+         <source file="..\obj\stm32f4_discovery_lis302dl.o" lastModified="13eed087c0c"/>
+         <source file="..\obj\stm32f4xx_tim.o" lastModified="13eed087d45"/>
       </target>
    </processor>
 </history>
