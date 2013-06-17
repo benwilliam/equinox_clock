@@ -7,6 +7,27 @@
 #include "stm32f4xx_tim.h"
 #include "misc.h"
 
+#define DEBUGMODE
+
+#ifdef DEBUGMODE
+#define MILLISEKUNDE SystemCoreClock/1000
+#define MICROSEKUNDE SystemCoreClock/1000000
+
+volatile uint32_t COUNTER = 0;
+void startTimer(void){
+	COUNTER = 0;
+	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
+	SysTick_Config(MICROSEKUNDE);
+}
+
+void SysTick_Handler(void){
+	COUNTER++;
+}
+
+uint32_t stopTimer(void){
+	return COUNTER;
+}
+#endif
 
 // local buffer for timer/dma, one byte per bit + reset pulse
 static uint16_t framebuffer[WS2811_FRAMEBUF_LEN];
@@ -101,7 +122,7 @@ void ws2811_init(void)
   TIM_TimeBaseStructInit(&timbaseinit);
   timbaseinit.TIM_ClockDivision = TIM_CKD_DIV1;
   timbaseinit.TIM_CounterMode = TIM_CounterMode_Up;
-  timbaseinit.TIM_Period = 19;//(WS2811_TIM_FREQ / WS2811_OUT_FREQ)-1;
+  timbaseinit.TIM_Period = WS2811_PWM_PERIOD;//(WS2811_TIM_FREQ / WS2811_OUT_FREQ)-1;
   timbaseinit.TIM_Prescaler = (uint16_t)(
       (SystemCoreClock / 8) / WS2811_TIM_FREQ) - 1; //sysclock / 4 (APB1 divider) / 2 (timer divider)
   TIM_TimeBaseInit(TIM3, &timbaseinit);
@@ -123,7 +144,6 @@ void ws2811_init(void)
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
   TIM_DMACmd(TIM3, TIM_DMA_CC3, ENABLE);
   DMA_ITConfig(DMA1_Stream7, DMA_IT_TC, ENABLE);
-  start_dma();
 
   // NVIC for DMA
   nvic_init.NVIC_IRQChannel = DMA1_Stream7_IRQn;
