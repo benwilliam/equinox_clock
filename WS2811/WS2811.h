@@ -7,12 +7,12 @@
 #define SIZE_OF_LED 24 // 3(RGB) * 8 Bit
 
 // timer values to generate a "one" or a "zero" according to ws2812 datasheet
-#define WS2811_PWM_ZERO     (19 / 5)  // 0.25 탎 of 1.25탎 is high => 1/5 of the period
+#define WS2811_PWM_ZERO     (19 / 5 + 1)  // 0.25 탎 of 1.25탎 is high => 1/5 of the period
 #define WS2811_PWM_ONE      (19 - WS2811_PWM_ZERO) // 1탎 of 1.25탎 is high -> 4/5 of the period
 
 
 // number of timer cycles (~1.25탎) for the reset pulse
-#define WS2811_RESET_LEN    50
+#define WS2811_RESET_LEN    1
 
 // three colors per led, eight bits per color
 #define WS2811_FRAMEBUF_LED_LEN  (NR_LEDS * SIZE_OF_LED)
