@@ -13,7 +13,7 @@
 
 
 // number of timer cycles (~1.25µs) for the reset pulse
-#define WS2811_RESET_LEN    1
+#define WS2811_RESET_LEN    1 //delay comes from LED_TO_PWM() function ca. 106 µs
 
 // three colors per led, eight bits per color
 #define WS2811_FRAMEBUF_LED_LEN  (NR_LEDS * SIZE_OF_LED)
@@ -22,6 +22,9 @@
 
 #define WS2811_TIM_FREQ      21000000
 #define WS2811_OUT_FREQ        800000
+
+#define WS2811_DATATRANSFER_DURATION 2000 //in µS
+#define WS2811_FRAMERATE	(1000000 / WS2811_DATATRANSFER_DURATION) //in Frames/second
 
 
 // ----------------------------- functions -----------------------------
@@ -33,7 +36,7 @@ void setAllLEDColor_32(uint32_t rgb);
 void clearColor();
 
 void start_dma();
-
+void LED_TO_PWM(void);
 void startTimer(void);
 uint32_t stopTimer(void);
 #endif

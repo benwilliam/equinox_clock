@@ -6,6 +6,7 @@
 #include "stm32f4xx_dma.h"
 #include "stm32f4xx_tim.h"
 #include "misc.h"
+#include "string.h"
 
 #define DEBUGMODE
 
@@ -29,14 +30,64 @@ uint32_t stopTimer(void){
 }
 #endif
 
+typedef struct{
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
+} LED;
+
+
 // local buffer for timer/dma, one byte per bit + reset pulse
 static uint16_t framebuffer[WS2811_FRAMEBUF_LEN];
+static LED LEDs[NR_LEDS];
 
 // start the dma transfer (framebuffer to timer)
 #define TRUE ENABLE
 #define FALSE DISABLE
 static FunctionalState DMA_BUSY = FALSE;
 
+
+void LED_TO_PWM(void) {
+	LED curLED;
+	for (int i = 0; i < NR_LEDS; i++) {
+		curLED = LEDs[i];
+
+		uint8_t mask = 0x80;
+		uint16_t * R;
+		uint16_t * G;
+		uint16_t * B;
+		G = &framebuffer[i*SIZE_OF_LED];
+		R = &framebuffer[i*SIZE_OF_LED+8];
+		B = &framebuffer[i*SIZE_OF_LED+16];
+
+
+		do {
+
+			if (curLED.R & mask) {
+				*R = WS2811_PWM_ONE;
+			} else {
+				*R = WS2811_PWM_ZERO;
+			}
+
+			if (curLED.G & mask) {
+				*G = WS2811_PWM_ONE;
+			} else {
+				*G = WS2811_PWM_ZERO;
+			}
+
+			if (curLED.B & mask) {
+				*B = WS2811_PWM_ONE;
+			} else {
+				*B = WS2811_PWM_ZERO;
+			}
+
+			R += 1;
+			G += 1;
+			B += 1;
+			mask >>= 1;
+		} while (mask != 0);
+	}
+}
 
 // writes the pwm values of one byte into the array which will be used by the dma
 static void color2pwm(uint16_t ** const dest, const uint8_t color) {
