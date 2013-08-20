@@ -1,14 +1,12 @@
 #include <stdio.h>
-#include "stm32f4xx.h"
 #include "WS2811.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_dma.h"
 #include "stm32f4xx_tim.h"
 #include "misc.h"
-#include "string.h"
 
-#define DEBUGMODE
+//#define DEBUGMODE
 
 #ifdef DEBUGMODE
 #define MILLISEKUNDE SystemCoreClock/1000
@@ -30,115 +28,46 @@ uint32_t stopTimer(void){
 }
 #endif
 
-typedef struct{
-	uint8_t R;
-	uint8_t G;
-	uint8_t B;
-} LED;
-
-
 // local buffer for timer/dma, one byte per bit + reset pulse
 static uint16_t framebuffer[WS2811_FRAMEBUF_LEN];
-static LED LEDs[NR_LEDS];
+color LEDs[NR_LEDS];
 
 // start the dma transfer (framebuffer to timer)
 #define TRUE ENABLE
 #define FALSE DISABLE
 static FunctionalState DMA_BUSY = FALSE;
 
-
-void LED_TO_PWM(void) {
-	LED curLED;
-	for (int i = 0; i < NR_LEDS; i++) {
-		curLED = LEDs[i];
-
-		uint8_t mask = 0x80;
-		uint16_t * R;
-		uint16_t * G;
-		uint16_t * B;
-		G = &framebuffer[i*SIZE_OF_LED];
-		R = &framebuffer[i*SIZE_OF_LED+8];
-		B = &framebuffer[i*SIZE_OF_LED+16];
-
-
-		do {
-
-			if (curLED.R & mask) {
-				*R = WS2811_PWM_ONE;
-			} else {
-				*R = WS2811_PWM_ZERO;
-			}
-
-			if (curLED.G & mask) {
-				*G = WS2811_PWM_ONE;
-			} else {
-				*G = WS2811_PWM_ZERO;
-			}
-
-			if (curLED.B & mask) {
-				*B = WS2811_PWM_ONE;
-			} else {
-				*B = WS2811_PWM_ZERO;
-			}
-
-			R += 1;
-			G += 1;
-			B += 1;
-			mask >>= 1;
-		} while (mask != 0);
-	}
-}
-
-// writes the pwm values of one byte into the array which will be used by the dma
-static void color2pwm(uint16_t ** const dest, const uint8_t color) {
-  uint8_t mask = 0x80;
-
-  do {
-    if (color & mask) {
-      **dest = WS2811_PWM_ONE;
-    } else {
-      **dest = WS2811_PWM_ZERO;
-    }
-    *dest += 1;
-    mask >>= 1;
-  } while (mask != 0);
-}
-
-void setColor(uint8_t led, uint8_t r, uint8_t g, uint8_t b){
+void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b){
 	assert_param(led <= NR_LEDS);
 
-	uint16_t * bufp = &framebuffer[led*SIZE_OF_LED];
-
-	color2pwm(&bufp, g);
-	color2pwm(&bufp, r);
-	color2pwm(&bufp, b);
+	LEDs[led].R = r;
+	LEDs[led].G = g;
+	LEDs[led].B = b;
 }
 
-void setColor_32(uint8_t led, uint32_t rgb){
+void setLED_32(uint8_t led, uint32_t rgb){
 	assert_param(rgb <= 0xffffff);
 
-	setColor(led, (rgb & 0x00ff0000) >> 16, (rgb & 0x0000ff00) >> 8, (rgb & 0x000000ff) >> 0);
+	setLED(led, (rgb & 0x00ff0000) >> 16, (rgb & 0x0000ff00) >> 8, (rgb & 0x000000ff) >> 0);
 }
 
-void setAllLEDColor(uint8_t r, uint8_t g, uint8_t b){
+void setAllLED(uint8_t r, uint8_t g, uint8_t b){
 	for(int i = 0; i<NR_LEDS; i++)
 	{
-		setColor(i, r, g, b);
+		setLED(i, r, g, b);
 	}
 }
 
-void setAllLEDColor_32(uint32_t rgb){
+void setAllLED_32(uint32_t rgb){
 	for(int i = 0; i<NR_LEDS; i++)
 	{
-		setColor_32(i, rgb);
+		setLED_32(i, rgb);
 	}
 }
 
 
-void clearColor(){
-	for (int i = 0; i < (WS2811_FRAMEBUF_LED_LEN); i++)
-	    framebuffer[i] = WS2811_PWM_ZERO;
-
+void clearAllLED(){
+	setAllLED(0, 0, 0);
 }
 
 
@@ -236,6 +165,50 @@ void start_dma(void)
 	  DMA_Cmd(DMA1_Stream7, ENABLE);
 	  TIM_DMACmd(TIM3, TIM_DMA_CC3, ENABLE);
 	}
+}
+
+void LED_TO_PWM(void) {
+	color curLED;
+	for (int i = 0; i < NR_LEDS; i++) {
+		curLED = LEDs[i];
+
+		uint8_t mask = 0x80;
+		uint16_t * R;
+		uint16_t * G;
+		uint16_t * B;
+		G = &framebuffer[i*SIZE_OF_LED];
+		R = &framebuffer[i*SIZE_OF_LED+8];
+		B = &framebuffer[i*SIZE_OF_LED+16];
+
+		do {
+
+			if (curLED.R & mask) {
+				*R = WS2811_PWM_ONE;
+			} else {
+				*R = WS2811_PWM_ZERO;
+			}
+
+			if (curLED.G & mask) {
+				*G = WS2811_PWM_ONE;
+			} else {
+				*G = WS2811_PWM_ZERO;
+			}
+
+			if (curLED.B & mask) {
+				*B = WS2811_PWM_ONE;
+			} else {
+				*B = WS2811_PWM_ZERO;
+			}
+
+			R += 1;
+			G += 1;
+			B += 1;
+			mask >>= 1;
+		} while (mask != 0);
+	}
+
+	//after PWMBuffer is updated, start the Transfer and return
+	start_dma();
 }
 
 // gets called when dma transfer has completed

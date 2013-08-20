@@ -1,18 +1,22 @@
-#ifndef WS2811_STM32F4_H
-#define WS2811_STM32F4_H
+#ifndef WS2811_H
+#define WS2811_H
 
 #include "stdint.h"
+
+//Attention!! Hardware dependancy!!
+#include "stm32f4xx.h"
+
 // ----------------------------- definitions -----------------------------
 #define NR_LEDS      60
 #define SIZE_OF_LED 24 // 3(RGB) * 8 Bit
 
 // timer values to generate a "one" or a "zero" according to ws2812 datasheet
-#define WS2811_PWM_PERIOD	19
+#define WS2811_PWM_PERIOD	36
 #define WS2811_PWM_ZERO     (WS2811_PWM_PERIOD / 5 + 1)  // 0.25 µs of 1.25µs is high => 1/5 of the period
 #define WS2811_PWM_ONE      (WS2811_PWM_PERIOD - WS2811_PWM_ZERO) // 1µs of 1.25µs is high -> 4/5 of the period
 
 
-// number of timer cycles (~1.25µs) for the reset pulse
+// number of timer cycles (~2.5µs) for the reset pulse
 #define WS2811_RESET_LEN    1 //delay comes from LED_TO_PWM() function ca. 106 µs
 
 // three colors per led, eight bits per color
@@ -23,20 +27,32 @@
 #define WS2811_TIM_FREQ      21000000
 #define WS2811_OUT_FREQ        800000
 
-#define WS2811_DATATRANSFER_DURATION 2000 //in µS
+#define WS2811_BIT_TRANSFER_DURATION 2500 //in nS per Bit
+#define WS2811_DATA_TRANSFER_DURATION (WS2811_BIT_TRANSFER_DURATION*WS2811_FRAMEBUF_LEN/1000) //complete Frame Transfer duration in µS
 #define WS2811_FRAMERATE	(1000000 / WS2811_DATATRANSFER_DURATION) //in Frames/second
 
+//------------------------------ structs ------------------------------
+typedef struct{
+	uint8_t R;
+	uint8_t G;
+	uint8_t B;
+} color;
 
 // ----------------------------- functions -----------------------------
 void ws2811_init(void);
-void setColor(uint8_t led, uint8_t r, uint8_t g, uint8_t b);
-void setColor_32(uint8_t led, uint32_t rgb);
-void setAllLEDColor(uint8_t r, uint8_t g, uint8_t b);
-void setAllLEDColor_32(uint32_t rgb);
-void clearColor();
+void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b);
+void setLED_32(uint8_t led, uint32_t rgb);
+void setAllLED(uint8_t r, uint8_t g, uint8_t b);
+void setAllLED_32(uint32_t rgb);
+void clearAllLED();
 
-void start_dma();
+
 void LED_TO_PWM(void);
+
+//debug functions
+#ifdef DEBUGMODE
 void startTimer(void);
 uint32_t stopTimer(void);
+#endif
+
 #endif
