@@ -45,6 +45,15 @@ void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b){
 	LEDs[led].B = b;
 }
 
+void setLED(uint8_t led, color c){
+	assert_param(led <= NR_LEDS);
+
+	LEDs[led].R = c.R;
+	LEDs[led].G = c.G;
+	LEDs[led].B = c.B;
+}
+
+
 void setLED_32(uint8_t led, uint32_t rgb){
 	assert_param(rgb <= 0xffffff);
 
@@ -58,13 +67,19 @@ void setAllLED(uint8_t r, uint8_t g, uint8_t b){
 	}
 }
 
+void setAllLED(color c){
+	for(int i = 0; i<NR_LEDS; i++)
+	{
+		setLED(i, c);
+	}
+}
+
 void setAllLED_32(uint32_t rgb){
 	for(int i = 0; i<NR_LEDS; i++)
 	{
 		setLED_32(i, rgb);
 	}
 }
-
 
 void clearAllLED(){
 	setAllLED(0, 0, 0);

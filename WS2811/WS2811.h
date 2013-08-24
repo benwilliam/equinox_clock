@@ -11,9 +11,9 @@
 #define SIZE_OF_LED 24 // 3(RGB) * 8 Bit
 
 // timer values to generate a "one" or a "zero" according to ws2812 datasheet
-#define WS2811_PWM_PERIOD	36
-#define WS2811_PWM_ZERO     (WS2811_PWM_PERIOD / 5 + 1)  // 0.25 탎 of 1.25탎 is high => 1/5 of the period
-#define WS2811_PWM_ONE      (WS2811_PWM_PERIOD - WS2811_PWM_ZERO) // 1탎 of 1.25탎 is high -> 4/5 of the period
+#define WS2811_PWM_PERIOD	38 //timer period time, don't know why 38 but it works with 168 MHz Systemclock
+#define WS2811_PWM_ZERO     (WS2811_PWM_PERIOD / 5 + 1)  // 0.5 탎 of 2.5탎 is high => 1/5 of the period
+#define WS2811_PWM_ONE      (WS2811_PWM_PERIOD - WS2811_PWM_ZERO) // 2탎 of 2.5탎 is high -> 4/5 of the period
 
 
 // number of timer cycles (~2.5탎) for the reset pulse
@@ -25,7 +25,7 @@
 
 
 #define WS2811_TIM_FREQ      21000000
-#define WS2811_OUT_FREQ        800000
+#define WS2811_OUT_FREQ        400000
 
 #define WS2811_BIT_TRANSFER_DURATION 2500 //in nS per Bit
 #define WS2811_DATA_TRANSFER_DURATION (WS2811_BIT_TRANSFER_DURATION*WS2811_FRAMEBUF_LEN/1000) //complete Frame Transfer duration in 킪
@@ -40,14 +40,17 @@ typedef struct{
 
 // ----------------------------- functions -----------------------------
 void ws2811_init(void);
+void LED_TO_PWM(void);
+
+// ----------------------------- graphics -----------------------------
 void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b);
+void setLED(uint8_t led, color c);
 void setLED_32(uint8_t led, uint32_t rgb);
 void setAllLED(uint8_t r, uint8_t g, uint8_t b);
+void setAllLED(color c);
 void setAllLED_32(uint32_t rgb);
 void clearAllLED();
 
-
-void LED_TO_PWM(void);
 
 //debug functions
 #ifdef DEBUGMODE
