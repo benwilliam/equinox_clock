@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "WS2811.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
@@ -37,7 +36,7 @@ color LEDs[NR_LEDS];
 #define FALSE DISABLE
 static FunctionalState DMA_BUSY = FALSE;
 
-void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b){
+void setLED(uint led, uint8_t r, uint8_t g, uint8_t b){
 	assert_param(led <= NR_LEDS);
 
 	LEDs[led].R = r;
@@ -45,37 +44,37 @@ void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b){
 	LEDs[led].B = b;
 }
 
-void setLED(uint8_t led, color c){
+void setLED_Color(uint led, color *c){
 	assert_param(led <= NR_LEDS);
 
-	LEDs[led].R = c.R;
-	LEDs[led].G = c.G;
-	LEDs[led].B = c.B;
+	LEDs[led].R = c->R;
+	LEDs[led].G = c->G;
+	LEDs[led].B = c->B;
 }
 
 
-void setLED_32(uint8_t led, uint32_t rgb){
+void setLED_32(uint led, uint32_t rgb){
 	assert_param(rgb <= 0xffffff);
 
 	setLED(led, (rgb & 0x00ff0000) >> 16, (rgb & 0x0000ff00) >> 8, (rgb & 0x000000ff) >> 0);
 }
 
 void setAllLED(uint8_t r, uint8_t g, uint8_t b){
-	for(int i = 0; i<NR_LEDS; i++)
+	for(uint i = 0; i<NR_LEDS; i++)
 	{
 		setLED(i, r, g, b);
 	}
 }
 
-void setAllLED(color c){
-	for(int i = 0; i<NR_LEDS; i++)
+void setAllLED_Color(color *c){
+	for(uint i = 0; i<NR_LEDS; i++)
 	{
-		setLED(i, c);
+		setLED_Color(i, c);
 	}
 }
 
 void setAllLED_32(uint32_t rgb){
-	for(int i = 0; i<NR_LEDS; i++)
+	for(uint i = 0; i<NR_LEDS; i++)
 	{
 		setLED_32(i, rgb);
 	}
@@ -182,10 +181,8 @@ void start_dma(void)
 	}
 }
 
-void LED_TO_PWM(void) {
-	color curLED;
-	for (int i = 0; i < NR_LEDS; i++) {
-		curLED = LEDs[i];
+void static inline LED_TO_PWM(uint8_t i) { //i = LED number
+	    color curLED = LEDs[i];
 
 		uint8_t mask = 0x80;
 		uint16_t * R;
@@ -220,10 +217,18 @@ void LED_TO_PWM(void) {
 			B += 1;
 			mask >>= 1;
 		} while (mask != 0);
-	}
+}
 
-	//after PWMBuffer is updated, start the Transfer and return
+void updateLED(void){
+	//calculate only the first LED, so the DMA can start while the rest is calculating
+	LED_TO_PWM(0);
+	//start the Transfer and return
 	start_dma();
+
+	//calculate the rest of LEDs
+	for (int i = 1; i < NR_LEDS; i++) {
+		LED_TO_PWM(i);
+	}
 }
 
 // gets called when dma transfer has completed
