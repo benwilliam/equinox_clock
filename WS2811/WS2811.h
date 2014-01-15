@@ -12,8 +12,8 @@
 #define SIZE_OF_LED 24 // 3(RGB) * 8 Bit
 
 // timer values to generate a "one" or a "zero" according to ws2812 datasheet
-#define WS2811_PWM_PERIOD	37 //timer period time, don't know why but it works with 168 MHz Systemclock
-#define WS2811_PWM_ZERO     (WS2811_PWM_PERIOD / 5 + 1)  // 0.5 탎 of 2.5탎 is high => 1/5 of the period
+#define WS2811_PWM_PERIOD	19 //timer period time, don't know why but it works with 168 MHz Systemclock
+#define WS2811_PWM_ZERO     (WS2811_PWM_PERIOD / 3 + 1)  // 0.5 탎 of 2.5탎 is high => 1/5 of the period
 #define WS2811_PWM_ONE      (WS2811_PWM_PERIOD - WS2811_PWM_ZERO) // 2탎 of 2.5탎 is high -> 4/5 of the period
 
 

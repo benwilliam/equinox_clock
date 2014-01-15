@@ -114,11 +114,10 @@ void ws2811_init(void)
   // TIMER
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
   TIM_TimeBaseStructInit(&timbaseinit);
-  timbaseinit.TIM_ClockDivision = TIM_CKD_DIV1;
+  timbaseinit.TIM_ClockDivision = TIM_CKD_DIV4;
   timbaseinit.TIM_CounterMode = TIM_CounterMode_Up;
   timbaseinit.TIM_Period = WS2811_PWM_PERIOD;//(WS2811_TIM_FREQ / WS2811_OUT_FREQ)-1;
-  timbaseinit.TIM_Prescaler = (uint16_t)(
-      (SystemCoreClock / 8) / WS2811_TIM_FREQ) - 1; //sysclock / 4 (APB1 divider) / 2 (timer divider)
+  timbaseinit.TIM_Prescaler =0; //sysclock / 4 (APB1 divider) / 2 (timer divider)
   TIM_TimeBaseInit(TIM3, &timbaseinit);
 
   TIM_OCStructInit(&timocinit);
