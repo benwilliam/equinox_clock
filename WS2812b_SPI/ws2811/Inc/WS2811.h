@@ -15,21 +15,20 @@
 #define SIZE_OF_LED (COLORS*BIT_FACTOR) // 3(RGB) * 4 Bit(4 SPI bit per WS2812B bit)
 
 // time for reset delay latch
-#define WS2811_RESET_CYCLES     8 //cycles a 1,5 µs = 12µs
-#define WS2811_RESET_LEN     (WS2811_RESET_CYCLES*BIT_FACTOR)
+#define WS2811_RESET_LEN     1 //send one extra byte which is set to 0 to hold MOSI pin to low and trigger the WS2811 latch
 
 // three colors per led, eight bits per color
 #define WS2811_FRAMEBUF_LED_LEN  (NR_LEDS * BIT_FACTOR)
 #define WS2811_FRAMEBUF_LEN    (WS2811_FRAMEBUF_LED_LEN + WS2811_RESET_LEN)
 
-#define WS2811_PWM_ZERO 0x8 //0b1000
-#define WS2811_PWM_ONE 0xE //0b1110
+#define WS2811_PWM_ZERO 0x1 //0b0001
+#define WS2811_PWM_ONE 0x7 //0b0111
 
 
 //------------------------------ structs ------------------------------
 typedef struct{
-	uint8_t R;
 	uint8_t G;
+	uint8_t R;
 	uint8_t B;
 } color;
 
@@ -38,14 +37,15 @@ void ws2811_init(void);
 void updateLED(void);
 
 // ----------------------------- graphics -----------------------------
-void setLED(uint led, uint8_t r, uint8_t g, uint8_t b);
-void setLED_Color(uint led, color *c);
-void setLED_32(uint led, uint32_t rgb);
+void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b);
+void setLED_Color(uint8_t led, color *c);
+void setLED_32(uint8_t led, uint32_t rgb);
 void setAllLED(uint8_t r, uint8_t g, uint8_t b);
 void setAllLED_Color(color *c);
 void setAllLED_32(uint32_t rgb);
 void clearAllLED();
-
+color createColor(uint8_t r, uint8_t g, uint8_t b);
+extern color LEDs[];
 
 //debug functions
 #ifdef DEBUGMODE

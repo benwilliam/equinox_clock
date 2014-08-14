@@ -1,100 +1,22 @@
-#include "WS2811.h"
+#include "WS2812SPI.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
 #include "stm32f4xx_dma.h"
-#include "stm32f4xx_tim.h"
 #include "stm32f4xx_spi.h"
 #include "misc.h"
 
-//#define DEBUGMODE
-
-#ifdef DEBUGMODE
-#define MILLISEKUNDE SystemCoreClock/1000
-#define MICROSEKUNDE SystemCoreClock/1000000
-
-volatile uint32_t COUNTER = 0;
-void startTimer(void){
-	COUNTER = 0;
-	SysTick_CLKSourceConfig(SysTick_CLKSource_HCLK);
-	SysTick_Config(MICROSEKUNDE);
+CWS2812SPI::CWS2812SPI(uint16_t _nr_pixel) : IWS2812Interface(_nr_pixel)
+{
+    framebuffer = new uint8_t[WS2812_FRAMEBUF_LEN];
 }
 
-void SysTick_Handler(void){
-	COUNTER++;
-}
-
-uint32_t stopTimer(void){
-	return COUNTER;
-}
-#endif
-
-// local buffer for timer/dma, one byte per bit + reset pulse
-static uint8_t framebuffer[WS2811_FRAMEBUF_LEN];
-color LEDs[NR_PIXEL];
-
-//just other pointer type
-static uint8_t *pLEDs = (uint8_t *) LEDs;
-
-// start the dma transfer (framebuffer to timer)
-#define TRUE ENABLE
-#define FALSE DISABLE
-static FunctionalState DMA_BUSY = FALSE;
-
-void setLED(uint8_t led, uint8_t r, uint8_t g, uint8_t b){
-	assert_param(led <= NR_PIXEL);
-
-	LEDs[led].R = r;
-	LEDs[led].G = g;
-	LEDs[led].B = b;
-}
-
-void setLED_Color(uint8_t led, color *c){
-	assert_param(led <= NR_PIXEL);
-
-	LEDs[led].R = c->R;
-	LEDs[led].G = c->G;
-	LEDs[led].B = c->B;
-}
-
-
-void setLED_32(uint8_t led, uint32_t rgb){
-	assert_param(rgb <= 0xffffff);
-
-	setLED(led, (rgb & 0x00ff0000) >> 16, (rgb & 0x0000ff00) >> 8, (rgb & 0x000000ff) >> 0);
-}
-
-void setAllLED(uint8_t r, uint8_t g, uint8_t b){
-	for(uint8_t i = 0; i<NR_PIXEL; i++)
-	{
-		setLED(i, r, g, b);
-	}
-}
-
-void setAllLED_Color(color *c){
-	for(uint8_t i = 0; i<NR_PIXEL; i++)
-	{
-		setLED_Color(i, c);
-	}
-}
-
-void setAllLED_32(uint32_t rgb){
-	for(uint8_t i = 0; i<NR_PIXEL; i++)
-	{
-		setLED_32(i, rgb);
-	}
-}
-
-void clearAllLED(){
-	setAllLED(0, 0, 0);
-}
-
-color createColor(uint8_t r, uint8_t g, uint8_t b){
-    return (color){g,r,b};
-}
+ CWS2812SPI::~CWS2812SPI(){
+    delete[] framebuffer;
+ }
 
 // initialization of peripherals for ws2811:
 // GPIO, timer (PWM mode), DMA, NVIC
-void ws2811_init(void)
+void CWS2812SPI::ws2812_init(void)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
   SPI_InitTypeDef SPI_InitStructure;
@@ -103,9 +25,9 @@ void ws2811_init(void)
 
   // data init, make sure reset pulse is zero
   int i;
-  for (i = 0; i < (WS2811_FRAMEBUF_LED_LEN); i++)
-    framebuffer[i] = WS2811_PWM_ZERO;
-  for (; i < WS2811_FRAMEBUF_LEN; i++)
+  for (i = 0; i < (WS2812_FRAMEBUF_LED_LEN); i++)
+    framebuffer[i] = WS2812_PWM_ZERO;
+  for (; i < WS2812_FRAMEBUF_LEN; i++)
     framebuffer[i] = 0;
 
    // GPIO
@@ -118,6 +40,7 @@ void ws2811_init(void)
     GPIO_Init(GPIOB, &GPIO_InitStructure);
     GPIO_PinAFConfig(GPIOB, GPIO_PinSource5, GPIO_AF_SPI3);
 
+    //SPI init
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI3, ENABLE);
     SPI_I2S_DeInit(SPI3);
     SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
@@ -132,13 +55,13 @@ void ws2811_init(void)
     SPI_Cmd(SPI3, ENABLE);
 
 
-  // DMA
+  // DMA init
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA1, ENABLE);
   DMA_InitStructure.DMA_Channel = DMA_Channel_0;
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI3->DR;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)framebuffer;
   DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
-  DMA_InitStructure.DMA_BufferSize = WS2811_FRAMEBUF_LEN;
+  DMA_InitStructure.DMA_BufferSize = WS2812_FRAMEBUF_LEN;
   DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
@@ -160,39 +83,42 @@ void ws2811_init(void)
 
   DMA_ITConfig(DMA1_Stream5, DMA_IT_TC, ENABLE);
 
+    //Enable DMA ready interrupt
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-
   NVIC_InitStructure.NVIC_IRQChannel = DMA1_Stream5_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+
+    DMA_BUSY = false;
+
 }
 
 
 // begin transferring framebuffer data to the timer
-void start_dma(void)
+void CWS2812SPI::start_dma(void)
 {
 	if(!DMA_BUSY){
 		DMA_Cmd(DMA1_Stream5, ENABLE);
         SPI_I2S_DMACmd(SPI3, SPI_I2S_DMAReq_Tx, ENABLE);
 
-        DMA_BUSY = TRUE;
+        DMA_BUSY = true;
 	}
 }
 
-static inline uint8_t ledBitToOut(uint8_t ledBit){
+inline uint8_t CWS2812SPI::ledBitToOut(uint8_t ledBit){
     if(ledBit)
-        return WS2811_PWM_ONE;
+        return WS2812_PWM_ONE;
     else
-        return WS2811_PWM_ZERO;
+        return WS2812_PWM_ZERO;
 
 }
 
-void static inline LED_TO_PWM(uint8_t i) { //i = LED number
+inline void CWS2812SPI::LED_TO_PWM(uint8_t i) { //i = LED number
 
     uint8_t outputByte=0;
-    uint8_t currentByte = pLEDs[i];
+    uint8_t currentByte = pPixel[i];
    for(uint8_t b=0; b<BIT_FACTOR;b++){
        uint8_t currentBit = (currentByte >> ((BIT_FACTOR-b-1)*2)) & 0x1;
        outputByte = (ledBitToOut(currentBit) << 4);
@@ -203,7 +129,7 @@ void static inline LED_TO_PWM(uint8_t i) { //i = LED number
    }
 }
 
-void updateLED(void){
+void CWS2812SPI::update(void){
 	//calculate only the first LED, so the DMA can start while the rest is calculating
 	LED_TO_PWM(0);
     LED_TO_PWM(1);
@@ -216,8 +142,12 @@ void updateLED(void){
 		LED_TO_PWM(i);
 	}
 
-
 }
+
+void CWS2812SPI::DMAReadyInterrupt(void){
+    DMA_BUSY = false;
+}
+
 
 // gets called when dma transfer has completed
 void DMA1_Stream5_IRQHandler(void)
@@ -226,7 +156,7 @@ void DMA1_Stream5_IRQHandler(void)
     //set data pin to low to latch  WS2811
     SPI3->DR = 0;
 
-	DMA_BUSY = FALSE;
+	CWS2812SPI::DMAReadyInterrupt();
 
 	DMA_Cmd(DMA1_Stream5, DISABLE);
 	while (DMA_GetFlagStatus(DMA1_Stream5, DMA_FLAG_TCIF5))
