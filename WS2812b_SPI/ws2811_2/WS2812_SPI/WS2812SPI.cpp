@@ -129,17 +129,22 @@ inline void CWS2812SPI::LED_TO_PWM(uint8_t i) { //i = LED number
    }
 }
 
-void CWS2812SPI::update(void){
-	//calculate only the first LED, so the DMA can start while the rest is calculating
-	LED_TO_PWM(0);
-    LED_TO_PWM(1);
-    //currently testing to first calculate all LEDs than start DMA
-    //start the Transfer and return
-	start_dma();
-
-	//calculate the rest of LEDs
-	for (uint8_t i = 2; i < (NR_LEDS); i++) {
-		LED_TO_PWM(i);
+bool CWS2812SPI::update(void){
+	if(!DMA_BUSY){
+		//calculate only the first LED, so the DMA can start while the rest is calculating
+		LED_TO_PWM(0);
+	
+	    //start the Transfer and return
+		start_dma();
+	
+		//calculate the rest of LEDs
+		for (uint8_t i = 1; i < (NR_LEDS); i++) {
+			LED_TO_PWM(i);
+		}
+		return true;
+	}
+	else{
+		return false;
 	}
 
 }
