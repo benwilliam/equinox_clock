@@ -63,8 +63,14 @@ class IWS2812Interface {
          *
          * this method will start the transforamtion from the Pixel buffer to the framebuffer
          * and sending the data to the WS2812 controller
+         * 
+         * this method will return immediately, but sending the data to Ws2812 could take longer
+         * so calling again this method while data are still sending, will do nothing
+         * so check out the return value of this method
+         * 
+         * \return true if update is accepted and sending of new data started, false when is still busy with sending previous data
          */
-        virtual void update(void)=0;
+        virtual bool update(void)=0;
 
 // ----------------------------- graphics -----------------------------
         /** \brief set the color of one specific Pixel
