@@ -3,14 +3,11 @@
 #include "stm32f4xx_exti.h"
 #include "misc.h"
 
-//animation callback
-void (*animationStep)(void) = 0;
-
-void setAnimationCallback(void(*aniStep)(void)){
-    animationStep=aniStep;
+RTC_AnimationDriver::RTC_AnimationDriver(){
+    
 }
 
-void rtc_InitWakeUpInterrupt(uint8_t wakeUpCounter){
+void RTC_AnimationDriver::rtc_InitWakeUpInterrupt(uint8_t wakeUpCounter){
   NVIC_InitTypeDef NVIC_InitStructure;
   EXTI_InitTypeDef  EXTI_InitStructure;
 
@@ -53,12 +50,11 @@ void RTC_WKUP_IRQHandler(void)
     EXTI_ClearITPendingBit(EXTI_Line22);
 
     // perform one step more of animation
-    if (animationStep != 0)
-        (*animationStep)();
+    RTC_AnimationDriver::getInstance().handleAnimationISR();
   }
 }
 
-void rtc_init(){
+void RTC_AnimationDriver::init(){
     /* Enable the PWR clock */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
 
@@ -99,10 +95,18 @@ void rtc_init(){
 
 }
 
-void rtc_getTime(RTC_TimeTypeDef *time){
-    RTC_GetTime(RTC_Format_BIN, time);
+bool RTC_AnimationDriver::rtc_getTime(RTC_TimeTypeDef &time){
+    RTC_GetTime(RTC_Format_BIN, &time);
+    //no checking for valid time yet, maybe in the future
+    return true;
 }
 
-void rtc_getDate(RTC_DateTypeDef *date){
-    RTC_GetDate(RTC_Format_BIN, date);
+bool RTC_AnimationDriver::rtc_getDate(RTC_DateTypeDef &date){
+    RTC_GetDate(RTC_Format_BIN, &date);
+     //no checking for valid date yet, maybe in the future
+    return true;
+}
+
+static RTC_AnimationDriver RTC_AnimationDriver::getInstance(){
+    return instance;
 }
