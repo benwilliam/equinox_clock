@@ -10,7 +10,7 @@ void setAnimationCallback(void(*aniStep)(void)){
     animationStep=aniStep;
 }
 
-void rtc_InitWakeUpInterrupt(){
+void rtc_InitWakeUpInterrupt(uint8_t wakeUpCounter){
   NVIC_InitTypeDef NVIC_InitStructure;
   EXTI_InitTypeDef  EXTI_InitStructure;
 
@@ -35,7 +35,7 @@ void rtc_InitWakeUpInterrupt(){
     // Teiler 16 => 32,768kHz:16 => 2048 Hz
     RTC_WakeUpClockConfig(RTC_WakeUpClock_RTCCLK_Div16);
     // WakeUp Counter einstellen
-    RTC_SetWakeUpCounter(16); //set to 16 -> 128 interrupts per second (32768Hz / Div16 = 2048; 2948 / 128 = 16
+    RTC_SetWakeUpCounter(wakeUpCounter); //set to 16 -> 128 interrupts per second (32768Hz / Div16 = 2048; 2048 / 128 = 16
 
     // enable Interrupt
     RTC_ITConfig(RTC_IT_WUT, ENABLE);
