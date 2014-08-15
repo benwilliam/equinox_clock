@@ -9,27 +9,25 @@ class IAnimationDriver{
 
 public:
 
-    struct AnimationEntry{
-        IAnimation *animation;
-        uint8_t performSteps;
-
-        AnimationEntry() : animation(nullptr), performSteps(0)
-        {}
-        AnimationEntry(IAnimation &ani) : animation(ani), performSteps(0)
-        {}
-    };
     /** \brief perform one step of all registered Animation
      *
      *  should be called in an endless loop in an own thread
+     *  all aniamtion with flagged performSteps > 0 will executed
      */
     void updateAnimations(void);
 
     /** \brief register an Animation
-     *
+     *  ATTENTION! will register the aniamtion on the next free slot
+     *  so if the order of animations is important you have to register them in the right order 
+     *  and take care of deRegisterAnimation
+     * 
+     *  it will NOT check if it is already registered
+     * 
      * \param animation to register
+     * \return true if success, false when @MAX_ANIMATION_COUNT exceeded
      *
      */
-    void registerAnimation(IAnimation &animation);
+    bool registerAnimation(IAnimation &animation);
 
     /** \brief deregister an Animation
      *
@@ -51,6 +49,20 @@ protected:
      */
     static const uint8_t MAX_ANIMATION_COUNT = 16;
 
-    AnimationEntry animations[MAX_ANIMATION_COUNT];
+    /** \brief all registered Animations
+     *
+     */
+    IAnimation *animations[MAX_ANIMATION_COUNT];
+    
+    /** \brief amount of steps to be performed
+     * will be increased by 1 from @handleAnimationISR;
+     * and decreased to 0 by @updateAnimations
+     */
+    uint8_t performSteps = 0;
+    
+    /** \brief should be called by a timer interrupt at regular intervals
+     *  e.g. 128 times per second
+     */
+    void handleAnimationISR(void);
 
 };
