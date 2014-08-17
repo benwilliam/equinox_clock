@@ -18,15 +18,16 @@
 					<Add option="-std=c++11" />
 					<Add option="-Wall" />
 					<Add option="-O0" />
-					<Add option="-g2" />
 					<Add option="-D__DONT_INIT_VTABLE" />
 					<Add option="-DVECT_TAB_SRAM" />
 					<Add option="-g3 -IInc/lib" />
 				</Compiler>
 				<Assembler>
-					<Add option="-Wa,--gdwarf-2" />
+					<Add option="-Wa,-mthumb-interwork" />
 				</Assembler>
 				<Linker>
+					<Add option="-lstdc++" />
+					<Add option="-eb_lib=d" />
 					<Add option="-Wl,--gc-sections" />
 				</Linker>
 			</Target>
@@ -67,32 +68,39 @@
 		</Linker>
 		<Unit filename="STM32F40x.svd" />
 		<Unit filename="STM32F41x.svd" />
-		<Unit filename="WS2812_SPI\WS2812Interface.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="WS2812_SPI\WS2812Interface.h" />
-		<Unit filename="WS2812_SPI\WS2812SPI.cpp">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="WS2812_SPI\WS2812SPI.h" />
 		<Unit filename="gcc_arm.ld" />
-		<Unit filename="graphics\RTC.c">
+		<Unit filename="graphics\PixelDisplay.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="graphics\RTC.h" />
+		<Unit filename="graphics\PixelDisplay.h" />
+		<Unit filename="graphics\animation.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="graphics\animation.h" />
 		<Unit filename="graphics\animationDriver.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="graphics\animationDriver.h" />
-		<Unit filename="graphics\graphics.c">
+		<Unit filename="graphics\animation_clock.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animation_clock.h" />
+		<Unit filename="graphics\animation_fading.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animation_fading.h" />
+		<Unit filename="graphics\graphics.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="graphics\graphics.h" />
-		<Unit filename="hardware\discoveryLEDs.c">
+		<Unit filename="hardware\RTC_AnimationDriver.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="hardware\discoveryLEDs.h" />
+		<Unit filename="hardware\RTC_AnimationDriver.h" />
+		<Unit filename="hardware\WS2812SPI.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hardware\WS2812SPI.h" />
 		<Unit filename="lib\misc.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -220,7 +228,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\system_stm32f4xx.h" />
-		<Unit filename="main.c">
+		<Unit filename="main.cpp">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="readme.txt" />
@@ -229,6 +237,19 @@
 				<search_path add="Inc\lib" />
 			</code_completion>
 			<debugger>
+				<target_debugging_settings target="Release" active_interface="ST-link">
+					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBLOCKS}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="0" active_family="STMicroelectronics">
+						<family_options family_id="STMicroelectronics">
+							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
+							<option opt_id="ID_VECTOR_START" opt_value="0x08000000" />
+							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
+							<option opt_id="ID_SEMIHOST_CHECK" opt_value="0" />
+							<option opt_id="ID_RAM_EXEC" opt_value="1" />
+							<option opt_id="ID_VEC_TABLE" opt_value="1" />
+							<option opt_id="ID_VERBOSE_LEVEL" opt_value="5" />
+						</family_options>
+					</debug_interface>
+				</target_debugging_settings>
 				<target_debugging_settings target="Debug" active_interface="OpenOCD">
 					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="D:\GIT\github\WS2812b_SPI\ws2811\openocd-0.8.0\bin-x64" executable="openocd-x64-0.8.0.exe" description="C:\Keil_v5\ARM\Pack\Keil\STM32F4xx_DFP\1.0.7\SVD\STM32F40x.svd" dont_start_server="false" backoff_time="100" options="2" active_family="All">
 						<family_options family_id="All">
@@ -254,19 +275,6 @@
 							<option opt_id="ID_RAM_EXEC" opt_value="0" />
 							<option opt_id="ID_VEC_TABLE" opt_value="1" />
 							<option opt_id="ID_VERBOSE_LEVEL" opt_value="3" />
-						</family_options>
-					</debug_interface>
-				</target_debugging_settings>
-				<target_debugging_settings target="Release" active_interface="ST-link">
-					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBLOCKS}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="0" active_family="STMicroelectronics">
-						<family_options family_id="STMicroelectronics">
-							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
-							<option opt_id="ID_VECTOR_START" opt_value="0x08000000" />
-							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
-							<option opt_id="ID_SEMIHOST_CHECK" opt_value="0" />
-							<option opt_id="ID_RAM_EXEC" opt_value="1" />
-							<option opt_id="ID_VEC_TABLE" opt_value="1" />
-							<option opt_id="ID_VERBOSE_LEVEL" opt_value="5" />
 						</family_options>
 					</debug_interface>
 				</target_debugging_settings>

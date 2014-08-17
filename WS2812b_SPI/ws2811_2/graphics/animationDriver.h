@@ -1,13 +1,26 @@
+#ifndef ANIMATIONDRIVER
+#define ANIMATIONDRIVER
+
 #include <animation.h>
+#include <stdint.h>
+#include <PixelDisplay.h>
+#include <vector>
 
 /** \brief Interface for a timer driven animation driver
  *
  *
  *
  */
-class IAnimationDriver{
+class IAnimationDriver
+{
 
 public:
+    /** \brief constructor of Baseclasse
+     *
+     * \param display the PixelDisplay driver to show the animation on
+     *
+     */
+    IAnimationDriver(IPixelDisplay *display);
 
     /** \brief perform one step of all registered Animation
      *
@@ -18,16 +31,15 @@ public:
 
     /** \brief register an Animation
      *  ATTENTION! will register the aniamtion on the next free slot
-     *  so if the order of animations is important you have to register them in the right order 
+     *  so if the order of animations is important you have to register them in the right order
      *  and take care of deRegisterAnimation
-     * 
+     *
      *  it will NOT check if it is already registered
-     * 
+     *
      * \param animation to register
-     * \return true if success, false when @MAX_ANIMATION_COUNT exceeded
      *
      */
-    bool registerAnimation(IAnimation &animation);
+    void registerAnimation(IAnimation &animation);
 
     /** \brief deregister an Animation
      *
@@ -43,26 +55,27 @@ public:
     virtual void init() = 0;
 
 protected:
-
-    /** \brief maximal amount of animations perform at the same time
+    /** \brief holds the display driver
      *
      */
-    static const uint8_t MAX_ANIMATION_COUNT = 16;
+    IPixelDisplay *display;
+
 
     /** \brief all registered Animations
      *
      */
-    IAnimation *animations[MAX_ANIMATION_COUNT];
-    
+    std::vector<IAnimation *> animations;
+
     /** \brief amount of steps to be performed
      * will be increased by 1 from @handleAnimationISR;
      * and decreased to 0 by @updateAnimations
      */
-    uint8_t performSteps = 0;
-    
+    uint8_t performSteps;
+
     /** \brief should be called by a timer interrupt at regular intervals
      *  e.g. 128 times per second
      */
     void handleAnimationISR(void);
 
 };
+#endif //ANIMATIONDRIVER

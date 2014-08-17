@@ -1,4 +1,12 @@
+#include <animation.h>
 
-void IAnimation::perofrmAnimationStep(void){
-  doAnimationStep();
+IAnimation::IAnimation(IPixelDisplay *display) : display(display)
+{
+
+}
+
+
+void IAnimation::perofrmAnimationStep(void)
+{
+    doAnimationStep();
 }
