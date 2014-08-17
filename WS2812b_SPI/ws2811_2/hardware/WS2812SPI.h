@@ -44,7 +44,7 @@ private:
     // ----------------------------- USER DEFINED CONSTANTS -----------------------------
     /** \brief how many bits are used to represent one WS2812B bit
      */
-    const uint8_t BIT_FACTOR = 4;
+    static const uint8_t BIT_FACTOR;
 
     /** \brief send this amount of extra byte to trigger the WS2811 latch
      * this bytes are set to 0 to hold MOSI pin to low
@@ -115,7 +115,7 @@ private:
      */
     static void DMAReadyInterrupt(void);
 
-
+    static const uint8_t lookUp[];
 
 };
 

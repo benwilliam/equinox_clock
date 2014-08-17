@@ -7,6 +7,13 @@
 
 
 bool CWS2812SPI::DMA_BUSY = false;
+const uint8_t CWS2812SPI::BIT_FACTOR = 4;
+
+const uint8_t CWS2812SPI::lookUp[] = {  (WS2812_PWM_ZERO << BIT_FACTOR) | WS2812_PWM_ZERO,
+                                        (WS2812_PWM_ONE << BIT_FACTOR) | WS2812_PWM_ZERO,
+                                        (WS2812_PWM_ZERO << BIT_FACTOR) | WS2812_PWM_ONE,
+
+                                        (WS2812_PWM_ONE << BIT_FACTOR) | WS2812_PWM_ONE, };
 
 CWS2812SPI::CWS2812SPI(uint16_t _nr_pixel) : IPixelDisplay(_nr_pixel), WS2812_FRAMEBUF_LED_LEN(NR_LEDS * BIT_FACTOR), WS2812_FRAMEBUF_LEN(WS2812_FRAMEBUF_LED_LEN + WS2812_RESET_LEN)
 {
@@ -128,14 +135,12 @@ inline void CWS2812SPI::LED_TO_PWM(uint8_t i)   //i = LED number
 
     uint8_t outputByte=0;
     uint8_t currentByte = pPixel[i];
+
     for(uint8_t b=0; b<BIT_FACTOR; b++)
     {
-        uint8_t currentBit = (currentByte >> ((BIT_FACTOR-b-1)*2)) & 0x1;
-        outputByte = (ledBitToOut(currentBit) << 4);
-        currentBit = (currentByte >> ((BIT_FACTOR-b-1)*2)+1) & 0x1;
-        outputByte = outputByte | ledBitToOut(currentBit);
+        uint8_t currentBit = (currentByte >> ((BIT_FACTOR-b-1)*2)) & 0x3;
+        outputByte = lookUp[currentBit];
         framebuffer[i*BIT_FACTOR+b] = outputByte;
-
     }
 }
 
