@@ -89,6 +89,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="graphics\animation_fading.h" />
+		<Unit filename="graphics\animation_knightRider.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animation_knightRider.h" />
 		<Unit filename="graphics\graphics.cpp">
 			<Option compilerVar="CC" />
 		</Unit>

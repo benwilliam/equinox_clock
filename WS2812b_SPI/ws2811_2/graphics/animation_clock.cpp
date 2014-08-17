@@ -12,12 +12,12 @@ void CAnimationClock::doAnimationStep(void)
     static RTC_TimeTypeDef time;
     rtc->rtc_getTime(time);
 
-    time.RTC_Hours = time.RTC_Hours %10;
-    time.RTC_Minutes = time.RTC_Minutes % 10;
-    time.RTC_Seconds = time.RTC_Seconds % 10;
+    time.RTC_Hours = (time.RTC_Hours+6) % 12;
+    time.RTC_Minutes = (time.RTC_Minutes+30)%60;
+    time.RTC_Seconds = (time.RTC_Seconds+30)%60;
 
     display->clearAllPixel();
-    display->Pixel[time.RTC_Hours] = addColor(display->Pixel[time.RTC_Hours], hourColor);
+    display->Pixel[time.RTC_Hours*5+time.RTC_Minutes/12] = addColor(display->Pixel[time.RTC_Hours], hourColor);
     display->Pixel[time.RTC_Minutes] = addColor(display->Pixel[time.RTC_Minutes], minuteColor);
     display->Pixel[time.RTC_Seconds] = addColor(display->Pixel[time.RTC_Seconds], secondColor);
 
