@@ -1,3 +1,3 @@
 the current compiled code is about 100K,
 far to much for some blinking LEDs
-look here http://thehackerworkshop.com/?p=443 and set the correct compiler and linker flags to reduce the size
+look here http://www.mikrocontroller.net/topic/298976 and set the correct compiler and linker flags to reduce the size
