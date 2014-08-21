@@ -1,3 +1,6 @@
 the current compiled code is about 100K,
 far to much for some blinking LEDs
 look here http://www.mikrocontroller.net/topic/298976 and set the correct compiler and linker flags to reduce the size
+
+with the help of the post above the imagesize shrinks to 36K for optimized release version and 45K for debug version
+the big size is mainly because of libstdc++
