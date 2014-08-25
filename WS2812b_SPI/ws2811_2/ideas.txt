@@ -4,3 +4,7 @@ look here http://www.mikrocontroller.net/topic/298976 and set the correct compil
 
 with the help of the post above the imagesize shrinks to 36K for optimized release version and 45K for debug version
 the big size is mainly because of libstdc++
+
+
+meteotime DCF77 weather
+Frankfurt is in the Region with ID 12
