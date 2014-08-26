@@ -8,3 +8,6 @@ the big size is mainly because of libstdc++
 
 meteotime DCF77 weather
 Frankfurt is in the Region with ID 12
+
+interprete weather data:
+http://www-user.tu-chemnitz.de/~heha/viewzip.cgi/hs/Funkuhr.zip/src/mtDekoder.c?auton=C
