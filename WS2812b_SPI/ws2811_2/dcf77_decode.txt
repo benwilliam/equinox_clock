@@ -1,0 +1,782 @@
+using System;
+using System.Runtime.InteropServices;
+
+
+namespace MeteoCoder
+{
+    /// <summary>
+    /// Enthält alle Funktionen zum Verschlüsseln und Entschlüsseln der via DCF77 übertragenen Wetterdaten.
+    /// Quelle: meteocrypt_working.c
+    /// </summary>
+    public class DeEnCoder
+    {
+        #region Deklarationen, Secrets, Sboxes, etc.
+        /// <summary>
+        /// Container zum Konvertieren zwischen 4 Bytes und Uint.
+        /// </summary>
+        [StructLayout(LayoutKind.Explicit)]
+        private struct ByteUInt
+        {
+            [FieldOffset(0)]
+            public byte Byte0;
+
+            [FieldOffset(1)]
+            public byte Byte1;
+
+            [FieldOffset(2)]
+            public byte Byte2;
+
+            [FieldOffset(3)]
+            public byte Byte3;
+
+            [FieldOffset(0)]
+            public uint FullUint;
+        }
+
+        /// <summary>
+        /// Container zum schnellen Zusammenfassen und Trennen von Key und Cipher.
+        /// </summary>
+        [StructLayout(LayoutKind.Explicit)]
+        unsafe private struct CipherKeyContainer
+        {
+            [FieldOffset(0)]
+            public fixed byte AllBytes[10];// = new Byte[10];
+
+            [FieldOffset(0)]
+            public fixed byte CipherBytes[5];// = new Byte[5];
+
+            [FieldOffset(5)]
+            public fixed byte KeyBytes[5];// = new Byte[5];
+        }
+
+        /// <summary>
+        /// bit pattern for 0D,0E from 0B-0D
+        /// </summary>
+        private uint[] mUintArrBitPattern12 = new uint[12]{
+	        0x80000, //0b10000000000000000000, /* 0D.3 */\
+	        0x00010, //0b00000000000000010000, /* 0B.4 */\
+        	0x00008, //0b00000000000000001000, /* 0B.3 */\
+	        0x00100, //0b00000000000100000000, /* 0C.0 */\
+	        0x00080, //0b00000000000010000000, /* 0B.7 */\
+	        0x01000, //0b00000001000000000000, /* 0C.4 */\
+	        0x00800, //0b00000000100000000000, /* 0C.3 */\
+	        0x10000, //0b00010000000000000000, /* 0D.0 */\
+	        0x08000, //0b00001000000000000000, /* 0C.7 */\
+	        0x00001, //0b00000000000000000001, /* 0B.0 */\
+	        0x00000, //0b00000000000000000000, /* xxxx */\
+	        0x00000  //0b00000000000000000000  /* xxxx */\
+        };
+
+        /// <summary>
+        /// 12-15 from 16-19 (time)
+        /// </summary>
+        private uint[] mUintArrBitPattern30_1 = new uint[30] {
+	        0x00000200, //0b00000000000000000000001000000000, /* 17.1 */\
+	        0x00000020, //0b00000000000000000000000000100000, /* 16.5 */\
+	        0x02000000, //0b00000010000000000000000000000000, /* 19.1 */\
+            0x00000000, //0b00000000000000000000000000000000, /* 1A.3 */\
+            0x00000000, //0b00000000000000000000000000000000, /* 1A.5 */\
+            0x00000080, //0b00000000000000000000000010000000, /* 16.7 */\
+            0x40000000, //0b01000000000000000000000000000000, /* 19.6 */\
+            0x01000000, //0b00000001000000000000000000000000, /* 19.0 */\
+
+            0x04000000, //0b00000100000000000000000000000000, /* 19.2 */\
+            0x00000000, //0b00000000000000000000000000000000, /* 1A.4 */\ 
+            0x00010000, //0b00000000000000010000000000000000, /* 18.0 */\
+            0x00000000, //0b00000000000000000000000000000000, /* 1A.2 */\
+            0x00400000, //0b00000000010000000000000000000000, /* 18.6 */\
+            0x00000010, //0b00000000000000000000000000010000, /* 16.4 */\
+            0x00200000, //0b00000000001000000000000000000000, /* 18.5 */\
+            0x00080000, //0b00000000000010000000000000000000, /* 18.3 */\
+
+            0x00004000, //0b00000000000000000100000000000000, /* 17.6 */\
+            0x00000000, //0b00000000000000000000000000000000, /* 1A.6 */\
+            0x00020000, //0b00000000000000100000000000000000, /* 18.1 */\
+            0x00100000, //0b00000000000100000000000000000000, /* 18.4 */\
+            0x00008000, //0b00000000000000001000000000000000, /* 17.7 */\
+            0x00000040, //0b00000000000000000000000001000000, /* 16.6 */\
+            0x00001000, //0b00000000000000000001000000000000, /* 17.4 */\
+            0x00000400, //0b00000000000000000000010000000000, /* 17.2 */\
+
+            0x00000001, //0b00000000000000000000000000000001, /* 16.0 */\
+            0x80000000, //0b10000000000000000000000000000000, /* 19.7 */\
+            0x00000008, //0b00000000000000000000000000001000, /* 16.3 */\
+            0x00000002, //0b00000000000000000000000000000010, /* 16.1 */\
+            0x00040000, //0b00000000000001000000000000000000, /* 18.2 */\
+            0x10000000  //0b00010000000000000000000000000000, /* 19.4 */\
+        };
+
+        /// <summary>
+        /// bit pattern for 12-15 from 1A (time2)
+        /// </summary>
+        private uint[] mUintArrBitPattern30_2 = new uint[30] {
+            0x00, //0b00000000,  /* 17.1 */\
+            0x00, //0b00000000,  /* 16.5 */\
+            0x00, //0b00000000,  /* 19.1 */\
+            0x08, //0b00001000,  /* 1A.3 */\
+            0x20, //0b00100000,  /* 1A.5 */\
+            0x00, //0b00000000,  /* 16.7 */\
+            0x00, //0b00000000,  /* 19.6 */\
+            0x00, //0b00000000,  /* 19.0 */\
+
+            0x00, //0b00000000,  /* 19.2 */\
+            0x10, //0b00010000,  /* 1A.4 */\
+            0x00, //0b00000000,  /* 18.0 */\
+            0x04, //0b00000100,  /* 1A.2 */\
+            0x00, //0b00000000,  /* 18.6 */\
+            0x00, //0b00000000,  /* 16.4 */\
+            0x00, //0b00000000,  /* 18.5 */\
+            0x00, //0b00000000,  /* 18.3 */\
+
+            0x00, //0b00000000,  /* 17.6 */\
+            0x40, //0b01000000,  /* 1A.6 */\
+            0x00, //0b00000000,  /* 18.1 */\
+            0x00, //0b00000000,  /* 18.4 */\
+            0x00, //0b00000000,  /* 17.7 */\
+            0x00, //0b00000000,  /* 16.6 */\
+            0x00, //0b00000000,  /* 17.4 */\
+            0x00, //0b00000000,  /* 17.2 */\
+
+            0x00, //0b00000000,  /* 16.0 */\
+            0x00, //0b00000000,  /* 19.7 */\
+            0x00, //0b00000000,  /* 16.3 */\
+            0x00, //0b00000000,  /* 16.1 */\
+            0x00, //0b00000000,  /* 18.2 */\
+            0x00  //0b00000000,  /* 19.4 */\
+        };
+
+        /// <summary>
+        /// 12-14 from 1C-1E (result from F)
+        /// </summary>
+        private uint[] mUintArrBitPattern20 = new uint[20] {
+            0x000004, //0b000000000000000000000100, /* 1C.2 */\
+            0x002000, //0b000000000010000000000000, /* 1E.5 */\
+            0x008000, //0b000000001000000000000000, /* 1E.7 */\
+            0x400000, //0b010000000000000000000000, /* 1D.6 */\
+            0x000100, //0b000000000000000100000000, /* 1E.0 */\
+            0x100000, //0b000100000000000000000000, /* 1D.4 */\
+            0x000400, //0b000000000000010000000000, /* 1E.2 */\
+            0x800000, //0b100000000000000000000000, /* 1D.7 */\
+
+            0x040000, //0b000001000000000000000000, /* 1D.2 */\
+            0x020000, //0b000000100000000000000000, /* 1D.1 */\
+            0x000008, //0b000000000000000000001000, /* 1C.3 */\
+            0x000200, //0b000000000000001000000000, /* 1E.1 */\
+            0x004000, //0b000000000100000000000000, /* 1E.6 */\
+            0x000002, //0b000000000000000000000010, /* 1C.1 */\
+            0x001000, //0b000000000001000000000000, /* 1E.4 */\
+            0x080000, //0b000010000000000000000000, /* 1D.3 */\
+
+            0x000800, //0b000000000000100000000000, /* 1E.3 */\
+            0x200000, //0b001000000000000000000000, /* 1D.5 */\
+            0x010000, //0b000000010000000000000000, /* 1D.0 */\
+            0x000001  //0b000000000000000000000001  /* 1C.0 */\
+        };
+
+        /// <summary>
+        /// bit pattern for 12-15 from 16-19 (1/3)
+        /// </summary>
+        private byte[] mByteArrLookupTable1C_1 = new byte[] {
+	        0xBB, 0x0E, 0x22, 0xC5, 0x73, 0xDF, 0xF7, 0x6D, 0x90, 0xE9, 0xA1, 0x38, 0x1C, 0x84, 0x4A, 0x56,
+	        0x64, 0x8D, 0x28, 0x0B, 0xD1, 0xBA, 0x93, 0x52, 0x1C, 0xC5, 0xA7, 0xF0, 0xE9, 0x7F, 0x36, 0x4E,
+	        0xC1, 0x77, 0x3D, 0xB3, 0xAA, 0xE0, 0x0C, 0x6F, 0x14, 0x88, 0xF6, 0x2B, 0xD2, 0x99, 0x5E, 0x45,
+	        0x1F, 0x70, 0x96, 0xD3, 0xB3, 0x0B, 0xFC, 0xEE, 0x81, 0x42, 0xCA, 0x34, 0xA5, 0x58, 0x29, 0x67
+        };
+
+        /// <summary>
+        /// bit pattern for 12-15 from 16-19 (2/3)
+        /// </summary>
+        private byte[] mByteArrLookupTable1C_2 = new byte[] {
+	        0xAB, 0x3D, 0xFC, 0x74, 0x65, 0xE6, 0x0E, 0x4F, 0x97, 0x11, 0xD8, 0x59, 0x83, 0xC2, 0xBA, 0x20,
+	        0xC5, 0x1B, 0xD2, 0x58, 0x49, 0x37, 0x01, 0x7D, 0x93, 0xFA, 0xE0, 0x2F, 0x66, 0xB4, 0xAC, 0x8E,
+	        0xB7, 0xCC, 0x43, 0xFF, 0x58, 0x66, 0xEB, 0x35, 0x82, 0x2A, 0x99, 0xDD, 0x00, 0x71, 0x14, 0xAE,
+	        0x4E, 0xB1, 0xF7, 0x70, 0x18, 0x52, 0xAA, 0x9F, 0xD5, 0x6B, 0xCC, 0x3D, 0x04, 0x83, 0xE9, 0x26
+        };
+
+        /// <summary>
+        /// bit pattern for 12-15 from 16-19 (3/3)
+        /// </summary>
+        private byte[] mByteArrLookupTable1C_3 = new byte[] {
+	        0x0A, 0x02, 0x00, 0x0F, 0x06, 0x07, 0x0D, 0x08, 0x03, 0x0C, 0x0B, 0x05, 0x09, 0x01, 0x04, 0x0E,
+	        0x02, 0x09, 0x05, 0x0D, 0x0C, 0x0E, 0x0F, 0x08, 0x06, 0x07, 0x0B, 0x01, 0x00, 0x0A, 0x04, 0x03,
+	        0x08, 0x00, 0x0D, 0x0F, 0x01, 0x0C, 0x03, 0x06, 0x0B, 0x04, 0x09, 0x05, 0x0A, 0x07, 0x02, 0x0E,
+	        0x03, 0x0D, 0x00, 0x0C, 0x09, 0x06, 0x0F, 0x0B, 0x01, 0x0E, 0x08, 0x0A, 0x02, 0x07, 0x04, 0x05
+        };
+
+        /// <summary>
+        /// Container, wich contains all former global vars
+        /// </summary>
+        private struct DataContainer
+        {
+            /// <summary>
+            /// Registers R12 to R15
+            /// </summary>
+            public ByteUInt mByteUint1;// = new ByteUInt();
+
+            /// <summary>
+            /// Registers R08 to R0A
+            /// </summary>
+            public ByteUInt mByteUint2;// = new ByteUInt();
+
+            /// <summary>
+            /// Registers R0B to R0E
+            /// </summary>
+            public ByteUInt mByteUint3;// = new ByteUInt();
+
+            /// <summary>
+            /// Registers R1C to R1E
+            /// </summary>
+            public ByteUInt mByteUint4;// = new ByteUInt();
+
+            public byte mByteUpperTime2;//, mByteR1B;
+            public uint mUintLowerTime;
+        }
+
+
+        #endregion
+
+        #region Public Methoden
+        /// <summary>
+        /// Entschlüsselt einen Datensatz.
+        /// </summary>
+        /// <param name="encodedDataset">Verschlüsselte Wetterdaten in binärer Form.</param>
+        /// <returns>Gibt die entschlüsselten Wetterdaten in binärer Form (untere 22 Bit + 2 Bit Status) zurück.</returns>
+        unsafe public uint DecodeDataset(byte[] encodedDataset)
+        {
+
+            CipherKeyContainer dataCiperKey = new CipherKeyContainer();
+            for (int i = 0; i < 10; i++)
+                if (i < encodedDataset.Length)
+                    dataCiperKey.AllBytes[i] = encodedDataset[i];
+                else
+                    dataCiperKey.AllBytes[i] = 0;
+
+            byte[] plain;
+
+            plain = Decrypt(dataCiperKey.CipherBytes, dataCiperKey.KeyBytes);
+            return GetMeteoFromPlain(plain);
+        }
+
+        /// <summary>
+        /// Entschlüsselt einen Datensatz.
+        /// </summary>
+        /// <param name="encodedDataset">Verschlüsselte Wetterdaten in Form eines Strings (Big-Endian).</param>
+        /// <returns>Gibt die entschlüsselten Wetterdaten in Form eines Strings (Big-Endian) zurück.</returns>
+        public string DecodeDataset(string encodedDataset)
+        {
+            int uiBitCnt, uiCnt;
+            byte ucTemp = 0;
+            byte[] dataCiperKey = new byte[10];
+            uint meteoResult;
+            encodedDataset = encodedDataset.PadRight(82, '0');
+            uiBitCnt = 0;
+            for (uiCnt = 1; uiCnt < 82; uiCnt++)
+            {
+                if (uiCnt != 7)
+                {
+                    ucTemp = (byte)(ucTemp >> 1);
+                    if (encodedDataset[uiCnt] == '1')
+                        ucTemp |= 0x80;
+                    uiBitCnt++;
+                    if ((uiBitCnt & 7) == 0)
+                        dataCiperKey[(uiBitCnt >> 3) - 1] = ucTemp;
+                }
+            }
+
+            meteoResult = DecodeDataset(dataCiperKey);
+
+            char[] result = Convert.ToString(meteoResult, 2).PadLeft(24, '0').ToCharArray();
+            Array.Reverse(result);
+
+            return new string(result);
+        }
+
+        /// <summary>
+        /// Verschlüsselt einen Datensatz
+        /// </summary>
+        /// <param name="plain">Wetterdaten in binärer Form (untere 22 Bit werden beachtet).</param>
+        /// <param name="key">Schlüssel in binärer Form (üblicherweise Zeitinformationen).</param>
+        /// <returns>Gibt die verschlüsselten Wetterdaten inkl. des Schlüssels in binärer Form zurück.</returns>
+        unsafe public byte[] EncodeDataset(uint plain, byte[] key)
+        {
+            byte[] result; // = new byte[10];
+            CipherKeyContainer InOut = new CipherKeyContainer();
+
+            for (int i = 0; i < 5; i++)
+                if (i < key.Length)
+                    InOut.KeyBytes[i] = key[i];
+                else
+                    InOut.KeyBytes[i] = 0;
+
+            byte[] plainToEncrypt = GetPlainFromMeteo(plain & 0x003FFFFF); //nur 22 Bit
+
+            for (int i = 0; i < 5; i++)
+                InOut.CipherBytes[i] = plainToEncrypt[i];
+
+            result = Encrypt(InOut.CipherBytes, InOut.KeyBytes);
+            for (int i = 0; i < 5; i++)
+                InOut.CipherBytes[i] = result[i];
+
+            result = new byte[10];
+
+            for (int i = 0; i < 10; i++)
+                result[i] = InOut.AllBytes[i];
+
+            return result;
+        }
+
+        /// <summary>
+        /// Verschlüsselt einen Datensatz
+        /// </summary>
+        /// <param name="plain">Wetterdaten in Form eines Strings (Big-Endian).</param>
+        /// <param name="key">Schlüssel in Form eines Strings (Big-Endian, üblicherweise Zeitinformationen).</param>
+        /// <returns>Gibt die verschlüsselten Wetterdaten inkl. des Schlüssels in Form eines Strings zurück.</returns>
+        unsafe public string EncodeDataset(string plain, string key)
+        {
+            byte[] resultBytes;
+
+            key = key.PadRight(40, '0');        //If plain and key too small
+            plain = plain.PadRight(22, '0');
+
+            CipherKeyContainer resultContainer = new CipherKeyContainer();
+            byte[] keyBytes = new byte[5];
+            char[] plainCharArr = plain.Substring(0, 22).ToCharArray();
+            Array.Reverse(plainCharArr); //Convert from Big Endian to Little Endian
+            uint plainData = Convert.ToUInt32(new string(plainCharArr), 2);
+            int uiBitCnt, uiCnt;
+            byte ucTemp = 0;
+
+            uiBitCnt = 0;
+            for (uiCnt = 0; uiCnt < 40; uiCnt++)
+            {
+                ucTemp = (byte)(ucTemp >> 1);
+                if (key[uiCnt] == '1')
+                    ucTemp |= 0x80;
+                uiBitCnt++;
+                if ((uiBitCnt & 7) == 0)
+                    keyBytes[(uiBitCnt >> 3) - 1] = ucTemp;
+            }
+
+            resultBytes = EncodeDataset(plainData, keyBytes);
+            for (int i = 0; i < 5; i++)
+            {
+                resultContainer.CipherBytes[i] = resultBytes[i];
+                resultContainer.KeyBytes[i] = keyBytes[i];
+            }
+
+            return CodedBinToString(resultContainer.CipherBytes, resultContainer.KeyBytes);
+        }
+
+        #endregion
+
+        #region Private Methoden
+        /// <summary>
+        /// Fügt Binärdaten (verschlüsselte Daten und Schnlüssel) in einem String zusammen.
+        /// </summary>
+        /// <param name="cipher">Zeiger auf eine Sequenz von Bytes, welche die verschlüsselten Bytes enthält.</param>
+        /// <param name="key">Zeiger auf eine Sequenz von Bytes, welche die Schlüssel-Bytes enthält.</param>
+        /// <returns>Gibt einen String zurück, in der ein Zeichen ein Bit der Eingangsdaten repräsentiert.</returns>
+        unsafe private string CodedBinToString(byte* cipher, byte* key)
+        {
+            char[] result = new char[82];
+            uint bitCount;
+            byte tmp = 0;
+
+            bitCount = 1;
+            result[0] = '0';
+
+            for (int i = 0; i < 40; i++)
+            {
+                if ((i & 7) == 0)
+                    tmp = *(cipher++);
+
+                if (bitCount == 7)
+                    result[bitCount++] = '0';
+
+                if ((tmp & 1) != 0)
+                    result[bitCount++] = '1';
+                else
+                    result[bitCount++] = '0';
+                tmp >>= 1;
+            }
+
+            for (int i = 0; i < 40; i++)
+            {
+                if (!((i & 7) >= 1))
+                    tmp = *(key++);
+
+                if ((tmp & 1) >= 1)
+                    result[bitCount++] = '1';
+                else
+                    result[bitCount++] = '0';
+                tmp >>= 1;
+            }
+
+            return new string(result);
+        }
+
+        /// <summary>
+        /// Ermittelt Wetterdaten aus den entschlüsselten Bytes und prüft auf Korrektheit.
+        /// </summary>
+        /// <param name="PlainBytes">Array mit den entschlüsselte Bytes.</param>
+        /// <returns>Gibt die aus dem Klartextbytes ermittelten Wetterdaten zurück</returns>
+        private uint GetMeteoFromPlain(byte[] PlainBytes)
+        {
+            uint result;
+            uint checkSum;
+            checkSum = PlainBytes[2] & 0x0Fu;
+            checkSum <<= 8;
+            checkSum |= PlainBytes[1];
+            checkSum <<= 4;
+            checkSum |= (uint)(PlainBytes[0] >> 4);
+
+            result = PlainBytes[0] & 0x0Fu | 0x10u;
+            result <<= 8;
+            result |= PlainBytes[4];
+            result <<= 8;
+            result |= PlainBytes[3];
+            result <<= 4;
+            result |= (uint)(PlainBytes[2] >> 4);
+
+            if (checkSum != 0x2501)
+                result = 0x200001;
+            else
+            {
+                result &= 0x3FFFFF;
+                result |= 0x400000;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Ermittelt den Klartext aus den Wetterdaten, welcher zur Verschlüsselung benötigt wird.
+        /// </summary>
+        /// <param name="meteo">Wetterdaten in binärer Form.</param>
+        /// <returns>Gibt die zu verschlüsselnden Klartextbytes zurück.</returns>
+        unsafe private byte[] GetPlainFromMeteo(uint meteo)
+        {
+            byte[] result = new byte[5];
+            meteo <<= 4;
+            result[1] = 0x50;
+            result[2] = (byte)((meteo & 0xF0) | 0x02);
+            meteo >>= 8;
+            result[3] = (byte)(meteo & 0xFF);
+            meteo >>= 8;
+            result[4] = (byte)(meteo & 0xFF);
+            meteo >>= 8;
+            result[0] = (byte)(meteo & 0x0F | 0x10);
+            return result;
+        }
+
+
+        unsafe private void CopyTimeToByteUint(byte* data, byte* key, ref DataContainer container)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                container.mUintLowerTime <<= 8;
+                container.mUintLowerTime |= key[3 - i];
+            }
+            container.mByteUpperTime2 = key[4];
+
+            // copy R
+            container.mByteUint3.Byte0 = data[2];
+            container.mByteUint3.Byte1 = data[3];
+            container.mByteUint3.Byte2 = data[4];
+            container.mByteUint3.FullUint >>= 4;
+
+            // copy L
+            container.mByteUint2.Byte0 = data[0];
+            container.mByteUint2.Byte1 = data[1];
+            container.mByteUint2.Byte2 = (byte)(data[2] & 0x0F);
+        }
+
+
+        private void ShiftTimeRight(int round, ref DataContainer container)
+        {
+            int count;
+            byte tmp;
+
+            if ((round == 16) || (round == 8) || (round == 7) || (round == 3))
+                count = 2;
+            else
+                count = 1;
+
+            while (count-- != 0)
+            {
+                tmp = 0;
+                if ((container.mUintLowerTime & 0x00100000) != 0)					// save time bit 20
+                    tmp = 1;
+
+                container.mUintLowerTime &= 0xFFEFFFFF;
+                if ((container.mUintLowerTime & 1) != 0)
+                    container.mUintLowerTime |= 0x00100000;				// copy time bit 0 to time bit 19
+                container.mUintLowerTime >>= 1;							// time >>= 1
+
+                if ((container.mByteUpperTime2 & 1) != 0)
+                    container.mUintLowerTime |= 0x80000000;
+                container.mByteUpperTime2 >>= 1;
+                if (tmp != 0)
+                    container.mByteUpperTime2 |= 0x80;					// insert time bit 20 to time bit 39
+            }
+
+        }
+
+        private void ShiftTimeLeft(int round, ref DataContainer container)
+        {
+            int count;
+            byte tmp;
+
+            if ((round == 16) || (round == 8) || (round == 7) || (round == 3))
+                count = 2;
+            else
+                count = 1;
+
+            while (count-- != 0)
+            {
+                tmp = 0;
+                if ((container.mByteUpperTime2 & 0x80) != 0)
+                    tmp = 1;
+                container.mByteUpperTime2 <<= 1;
+
+                if ((container.mUintLowerTime & 0x80000000) != 0)
+                    container.mByteUpperTime2 |= 1;
+
+                container.mUintLowerTime <<= 1;
+                if ((container.mUintLowerTime & 0x00100000) != 0)
+                    container.mUintLowerTime |= 1;
+
+                container.mUintLowerTime &= 0xFFEFFFFF;
+                if (tmp != 0)
+                    container.mUintLowerTime |= 0x00100000;
+            }
+        }
+
+        private void ExpandR(ref DataContainer container)
+        {
+            uint tmp;
+
+            container.mByteUint3.FullUint &= 0x000FFFFF;			// clear 0D(4-7),0E
+            tmp = 0x00100000;					// and set bits form 0B-0D(0-3)
+            for (int i = 0; i < 12; i++)
+            {
+                if ((container.mByteUint3.FullUint & mUintArrBitPattern12[i]) != 0)
+                    container.mByteUint3.FullUint |= tmp;
+                tmp <<= 1;
+            }
+        }
+
+        private void ExpandL(ref DataContainer container)
+        {
+            uint tmp;
+
+            container.mByteUint2.FullUint &= 0x000FFFFF;			// clear 0D(4-7),0E
+            tmp = 0x00100000;					// and set bits form 0B-0D(0-3)
+            for (int i = 0; i < 12; i++)
+            {
+                if ((container.mByteUint2.FullUint & mUintArrBitPattern12[i]) != 0)
+                    container.mByteUint2.FullUint |= tmp;
+                tmp <<= 1;
+            }
+        }
+
+        private void CompressKey(ref DataContainer container)
+        {
+            uint tmp;
+
+            container.mByteUint1.FullUint = 0;					// clear 12-15
+            tmp = 0x00000001;					// and set bits from 16-1A (time)
+            for (int i = 0; i < 30; i++)
+            {
+                if ((container.mUintLowerTime & mUintArrBitPattern30_1[i]) != 0 || (container.mByteUpperTime2 & mUintArrBitPattern30_2[i]) != 0)
+                    container.mByteUint1.FullUint |= tmp;
+                tmp <<= 1;
+            }
+        }
+
+        private void DoSbox(ref DataContainer container)
+        {
+            byte tmp, helper; //mByteR1B;
+
+            helper = container.mByteUint1.Byte3;					      // R1B = R15;
+            container.mByteUint1.Byte3 = container.mByteUint1.Byte2;			// R15 = R14
+
+            // INNER LOOP
+            for (int i = 5; i > 0; i--)
+            {
+                if ((i & 1) == 0) // round 4,2
+                {
+                    tmp = (byte)(container.mByteUint1.Byte0 >> 4);		// swap R12
+                    tmp |= (byte)((container.mByteUint1.Byte0 & 0x0f) << 4);
+                    container.mByteUint1.Byte0 = tmp;
+                }
+                container.mByteUint1.Byte3 &= 0xF0;						// set R1C
+                tmp = (byte)((container.mByteUint1.Byte0 & 0x0F) | container.mByteUint1.Byte3);
+
+                if ((i & 4) != 0)
+                    tmp = mByteArrLookupTable1C_1[(tmp & 0x3F)];
+
+                if ((i & 2) != 0)
+                    tmp = mByteArrLookupTable1C_2[(tmp & 0x3F)];
+
+                else if (i == 1)
+                    tmp = mByteArrLookupTable1C_3[(tmp & 0x3F)];
+
+                if ((i & 1) != 0)
+                    container.mByteUint4.Byte0 = (byte)(tmp & 0x0F);
+                else
+                    container.mByteUint4.Byte0 |= (byte)(tmp & 0xF0);
+
+                if ((i & 1) == 0)							// copy 14->13->12, 1C->1E->1D
+                {
+                    tmp = container.mByteUint1.Byte3;
+                    container.mByteUint1.FullUint >>= 8;
+                    container.mByteUint1.Byte3 = tmp;
+                    container.mByteUint4.FullUint <<= 8;
+                }
+
+                container.mByteUint1.Byte3 >>= 1;					// rotate R1B>R15 twice
+                if ((helper & 1) != 0)
+                    container.mByteUint1.Byte3 |= 0x80;
+                helper >>= 1;
+
+                container.mByteUint1.Byte3 >>= 1;
+                if ((helper & 1) != 0)
+                    container.mByteUint1.Byte3 |= 0x80;
+                helper >>= 1;
+            } // end of inner loop
+        }
+
+        private void DoPbox(ref DataContainer container)
+        {
+            uint tmp;
+
+            container.mByteUint1.FullUint = 0xFF000000;			// clear 12-14
+            tmp = 0x00000001;					// and set bits from 1C-1E (result from F)
+            for (int i = 0; i < 20; i++)
+            {
+                if ((container.mByteUint4.FullUint & mUintArrBitPattern20[i]) != 0)
+                    container.mByteUint1.FullUint |= tmp;
+                tmp <<= 1;
+            }
+        }
+
+        /// <summary>
+        /// DECRYPTION
+        /// </summary>
+        /// <param name="cipher"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        unsafe private byte[] Decrypt(byte* cipher, byte* key)
+        {
+            DataContainer container = new DataContainer();
+
+            //uint ulTemp;
+            //uiCnt, uiILCnt, , uiOL2Cnt, uiBitCnt
+            //byte ucOL2Pat, ucTemp;
+            byte[] plain = new byte[5];
+            CopyTimeToByteUint(cipher, key, ref container);
+
+            // OUTER LOOP 1
+            for (int i = 16; i > 0; i--)
+            {
+                ShiftTimeRight(i, ref container);
+                ExpandR(ref container);
+                CompressKey(ref container);
+
+                // expR XOR compr.Key
+                container.mByteUint1.FullUint ^= container.mByteUint3.FullUint;	// 12-15 XOR 0B-0E
+                container.mByteUint3.Byte2 &= 0x0F;				// clear 0D(4-7)
+
+                DoSbox(ref container);
+                DoPbox(ref container);
+
+                // L XOR P-Boxed Round-Key (L')
+                container.mByteUint1.FullUint ^= container.mByteUint2.FullUint;
+
+                // L = R
+                container.mByteUint2.FullUint = container.mByteUint3.FullUint & 0x00FFFFFF;
+
+                // R = L'
+                container.mByteUint3.FullUint = container.mByteUint1.FullUint & 0x00FFFFFF;
+            } // end of outer loop 1
+
+            container.mByteUint3.FullUint <<= 4;
+            container.mByteUint2.Byte2 &= 0x0F;
+            container.mByteUint2.Byte2 |= (byte)(container.mByteUint3.Byte0 & 0xF0);
+
+            //R0B0C0D0E.byte.R0D |= (R08090A.byte.R08 & 0xF0);
+            plain[0] = container.mByteUint2.Byte0;
+            plain[1] = container.mByteUint2.Byte1;
+            plain[2] = container.mByteUint2.Byte2;
+            plain[3] = container.mByteUint3.Byte1;
+            plain[4] = container.mByteUint3.Byte2;
+
+            return plain;
+        }
+
+        /// <summary>
+        /// ENCRYPTION
+        /// </summary>
+        /// <param name="plain"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        unsafe private byte[] Encrypt(byte* plain, byte* key)
+        {
+            byte[] cipher = new byte[5];
+            DataContainer container = new DataContainer();
+            //uint ulTemp;
+            //uiCnt, uiILCnt, , uiOL2Cnt, uiBitCnt
+            //byte ucOL2Pat, ucTemp;
+
+            CopyTimeToByteUint(plain, key, ref container);
+
+            // OUTER LOOP 1
+            for (int i = 1; i < 17; i++)
+            {
+                ExpandL(ref container);
+                CompressKey(ref container);
+
+                // expR XOR compr.Key
+                container.mByteUint1.FullUint ^= container.mByteUint2.FullUint;	   // L' XOR compr.Key
+                container.mByteUint3.Byte2 &= 0x0F;				// clear 0D(4-7)
+
+                DoSbox(ref container);
+                DoPbox(ref container);
+
+                // L XOR P-Boxed Round-Key (L')
+                container.mByteUint1.FullUint ^= container.mByteUint3.FullUint;
+                // L = R
+                container.mByteUint3.FullUint = container.mByteUint2.FullUint & 0x00FFFFFF;
+                // R = L'
+                container.mByteUint2.FullUint = container.mByteUint1.FullUint & 0x00FFFFFF;
+
+                ShiftTimeLeft(i, ref container);
+            } // end of outer loop 1
+
+            container.mByteUint3.FullUint <<= 4;
+            container.mByteUint2.Byte2 &= 0x0F;
+            container.mByteUint2.Byte2 |= (byte)(container.mByteUint3.Byte0 & 0xF0);
+
+            //R0B0C0D0E.byte.R0D |= (R08090A.byte.R08 & 0xF0);
+            cipher[0] = container.mByteUint2.Byte0;
+            cipher[1] = container.mByteUint2.Byte1;
+            cipher[2] = container.mByteUint2.Byte2;
+            cipher[3] = container.mByteUint3.Byte1;
+            cipher[4] = container.mByteUint3.Byte2;
+
+            /*
+                R08090A.ulFull <<= 4;
+                R0B0C0D0E.byte.R0D |= (R08090A.byte.R08 & 0xF0);
+
+               pucCipher[0] = R0B0C0D0E.byte.R0B;
+               pucCipher[1] = R0B0C0D0E.byte.R0C;
+               pucCipher[2] = R0B0C0D0E.byte.R0D;
+               pucCipher[3] = R08090A.byte.R09;
+               pucCipher[4] = R08090A.byte.R0A;
+            */
+            return cipher;
+        }
+        #endregion
+
+    }
+}
