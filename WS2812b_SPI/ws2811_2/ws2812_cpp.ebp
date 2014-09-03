@@ -4,31 +4,35 @@
 	<FileVersion major="1" minor="0" />
 	<Project>
 		<Option title="ws2812" />
-		<Option pch_mode="2" />
 		<Option compiler="armgcc_eb" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin\Debug\ws2811.elf" />
+				<Option output="bin\Debug\ws2812.elf" />
 				<Option object_output="obj\Debug\" />
 				<Option type="0" />
 				<Option create_hex="1" />
 				<Option compiler="armgcc_eb" />
 				<Option projectDeviceOptionsRelation="0" />
+				<Option projectCompilerOptionsRelation="1" />
 				<Compiler>
+					<Add option="-fno-exceptions" />
+					<Add option="-fno-rtti" />
 					<Add option="-std=c++11" />
 					<Add option="-Wall" />
-					<Add option="-O0" />
-					<Add option="-D__DONT_INIT_VTABLE" />
-					<Add option="-DVECT_TAB_SRAM" />
-					<Add option="-g3 -IInc/lib" />
+					<Add option="-fdata-sections" />
+					<Add option="-ffunction-sections" />
+					<Add option="-g3" />
+					<Add option="-mfpu=fpv4-sp-d16 -mfloat-abi=hard" />
 				</Compiler>
 				<Assembler>
 					<Add option="-Wa,-mthumb-interwork" />
 				</Assembler>
 				<Linker>
 					<Add option="-lstdc++" />
-					<Add option="-eb_lib=d" />
+					<Add option="-eb_lib=n" />
+					<Add option="-eb_use_semi" />
 					<Add option="-Wl,--gc-sections" />
+					<Add option="-ffunction-sections -fdata-sections -mfpu=fpv4-sp-d16 -mfloat-abi=hard -Os" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -105,6 +109,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="hardware\WS2812SPI.h" />
+		<Unit filename="hardware\dcf77.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hardware\dcf77.h" />
 		<Unit filename="lib\misc.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -113,43 +121,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\stm32f4xx.h" />
-		<Unit filename="lib\stm32f4xx_adc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_adc.h" />
-		<Unit filename="lib\stm32f4xx_can.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_can.h" />
-		<Unit filename="lib\stm32f4xx_crc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_crc.h" />
-		<Unit filename="lib\stm32f4xx_cryp.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_cryp.h" />
-		<Unit filename="lib\stm32f4xx_cryp_aes.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_cryp_des.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_cryp_tdes.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_dac.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_dac.h" />
-		<Unit filename="lib\stm32f4xx_dbgmcu.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_dbgmcu.h" />
-		<Unit filename="lib\stm32f4xx_dcmi.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_dcmi.h" />
 		<Unit filename="lib\stm32f4xx_dma.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -158,36 +129,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\stm32f4xx_exti.h" />
-		<Unit filename="lib\stm32f4xx_flash.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_flash.h" />
-		<Unit filename="lib\stm32f4xx_fsmc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_fsmc.h" />
 		<Unit filename="lib\stm32f4xx_gpio.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\stm32f4xx_gpio.h" />
-		<Unit filename="lib\stm32f4xx_hash.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_hash.h" />
-		<Unit filename="lib\stm32f4xx_hash_md5.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_hash_sha1.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_i2c.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_i2c.h" />
-		<Unit filename="lib\stm32f4xx_iwdg.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_iwdg.h" />
 		<Unit filename="lib\stm32f4xx_pwr.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -196,38 +141,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\stm32f4xx_rcc.h" />
-		<Unit filename="lib\stm32f4xx_rng.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_rng.h" />
 		<Unit filename="lib\stm32f4xx_rtc.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\stm32f4xx_rtc.h" />
-		<Unit filename="lib\stm32f4xx_sdio.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_sdio.h" />
 		<Unit filename="lib\stm32f4xx_spi.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\stm32f4xx_spi.h" />
-		<Unit filename="lib\stm32f4xx_syscfg.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_syscfg.h" />
 		<Unit filename="lib\stm32f4xx_tim.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib\stm32f4xx_tim.h" />
-		<Unit filename="lib\stm32f4xx_usart.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_usart.h" />
-		<Unit filename="lib\stm32f4xx_wwdg.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib\stm32f4xx_wwdg.h" />
 		<Unit filename="lib\system_stm32f4xx.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -237,23 +162,8 @@
 		</Unit>
 		<Unit filename="readme.txt" />
 		<Extensions>
-			<code_completion>
-				<search_path add="Inc\lib" />
-			</code_completion>
+			<code_completion />
 			<debugger>
-				<target_debugging_settings target="Release" active_interface="ST-link">
-					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBLOCKS}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="0" active_family="STMicroelectronics">
-						<family_options family_id="STMicroelectronics">
-							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
-							<option opt_id="ID_VECTOR_START" opt_value="0x08000000" />
-							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
-							<option opt_id="ID_SEMIHOST_CHECK" opt_value="0" />
-							<option opt_id="ID_RAM_EXEC" opt_value="1" />
-							<option opt_id="ID_VEC_TABLE" opt_value="1" />
-							<option opt_id="ID_VERBOSE_LEVEL" opt_value="5" />
-						</family_options>
-					</debug_interface>
-				</target_debugging_settings>
 				<target_debugging_settings target="Debug" active_interface="OpenOCD">
 					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="D:\GIT\github\WS2812b_SPI\ws2811\openocd-0.8.0\bin-x64" executable="openocd-x64-0.8.0.exe" description="C:\Keil_v5\ARM\Pack\Keil\STM32F4xx_DFP\1.0.7\SVD\STM32F40x.svd" dont_start_server="false" backoff_time="100" options="2" active_family="All">
 						<family_options family_id="All">
@@ -279,6 +189,19 @@
 							<option opt_id="ID_RAM_EXEC" opt_value="0" />
 							<option opt_id="ID_VEC_TABLE" opt_value="1" />
 							<option opt_id="ID_VERBOSE_LEVEL" opt_value="3" />
+						</family_options>
+					</debug_interface>
+				</target_debugging_settings>
+				<target_debugging_settings target="Release" active_interface="ST-link">
+					<debug_interface interface_id="ST-link" ip_address="localhost" ip_port="4242" path="${EMBLOCKS}\share\contrib" executable="STLinkGDB.exe" description="" dont_start_server="false" backoff_time="1000" options="0" active_family="STMicroelectronics">
+						<family_options family_id="STMicroelectronics">
+							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
+							<option opt_id="ID_VECTOR_START" opt_value="0x08000000" />
+							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
+							<option opt_id="ID_SEMIHOST_CHECK" opt_value="0" />
+							<option opt_id="ID_RAM_EXEC" opt_value="1" />
+							<option opt_id="ID_VEC_TABLE" opt_value="1" />
+							<option opt_id="ID_VERBOSE_LEVEL" opt_value="5" />
 						</family_options>
 					</debug_interface>
 				</target_debugging_settings>

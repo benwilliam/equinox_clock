@@ -15,6 +15,8 @@
 #include "WS2812SPI.h"
 #include "RTC_AnimationDriver.h"
 #include "animation_knightRider.h"
+#include "dcf77.h"
+
 
 int main(void)
 {
@@ -31,6 +33,9 @@ int main(void)
 
     //CAnimationKnightRider kr(&ws2812, BLUE);
     //rtc.registerAnimation(kr);
+
+    CDCF77Decoder dcf77;
+    dcf77.init();
 
     while(1)
     {

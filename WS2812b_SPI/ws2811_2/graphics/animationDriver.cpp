@@ -12,21 +12,21 @@ void IAnimationDriver::updateAnimations(void)
     while(performSteps > 0)
     {
         //C++11 method
-//        for (IAnimation *animation : animations)
-//        {
-//            if(animation != NULL)
-//            {
-//                animation->perofrmAnimationStep();
-//            }
-//        }
-
-        for(std::vector<int>::size_type i = 0; i != animations.size(); i++)
+        for (IAnimation *animation : animations)
         {
-            if(animations[i] != NULL)
+            if(animation != NULL)
             {
-                animations[i]->perofrmAnimationStep();
+                animation->perofrmAnimationStep();
             }
         }
+
+//        for(std::vector<int>::size_type i = 0; i != animations.size(); i++)
+//        {
+//            if(animations[i] != NULL)
+//            {
+//                animations[i]->perofrmAnimationStep();
+//            }
+//        }
         display->update();
         performSteps--;
     }

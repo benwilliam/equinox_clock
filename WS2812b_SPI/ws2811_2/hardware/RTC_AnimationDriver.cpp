@@ -142,15 +142,15 @@ extern "C" {
         {
             //c++11 way of doing it
             // perform one step more of animation
-//        for (RTC_AnimationDriver *driver : RTC_AnimationDriver::rtcAnimationDrivers){
-//            driver->handleAnimationISR();
-//        }
-            for(std::vector<int>::size_type i = 0; i != RTC_AnimationDriver::rtcAnimationDrivers.size(); i++)
-            {
-
-                RTC_AnimationDriver::rtcAnimationDrivers[i]->handleAnimationISR();
-
-            }
+        for (RTC_AnimationDriver *driver : RTC_AnimationDriver::rtcAnimationDrivers){
+            driver->handleAnimationISR();
+        }
+//            for(std::vector<int>::size_type i = 0; i != RTC_AnimationDriver::rtcAnimationDrivers.size(); i++)
+//            {
+//
+//                RTC_AnimationDriver::rtcAnimationDrivers[i]->handleAnimationISR();
+//
+//            }
             // Interrupt Flags loeschen
             RTC_ClearITPendingBit(RTC_IT_WUT);
             EXTI_ClearITPendingBit(EXTI_Line22);
