@@ -138,7 +138,7 @@ void LedInit(void)
 //}
 void delay (void)
 {
-	for(uint32_t i = 0; i < 10000000; i++)
+	for(uint32_t i = 0; i < 100; i++)
 	{
 
 	}
@@ -162,7 +162,7 @@ int main(void)
 
 
 #define MAX 4095
-#define MIN 0
+#define MIN 2000
     int16_t count = MIN;
     while(1)
     {

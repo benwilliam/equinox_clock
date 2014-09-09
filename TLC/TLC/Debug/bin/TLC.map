@@ -818,10 +818,10 @@ Linker script and memory map
                 0x08000424                DMA1_Stream3_IRQHandler
  .text.LedInit  0x0800042c       0x48 ..\obj\main.o
                 0x0800042c                LedInit
- .text.delay    0x08000474       0x30 ..\obj\main.o
+ .text.delay    0x08000474       0x28 ..\obj\main.o
                 0x08000474                delay
- .text.main     0x080004a4       0xbc ..\obj\main.o
-                0x080004a4                main
+ .text.main     0x0800049c       0xc4 ..\obj\main.o
+                0x0800049c                main
  .text.RCC_MCO1Config
                 0x08000560       0x48 ..\obj\stm32f4xx_rcc.o
                 0x08000560                RCC_MCO1Config

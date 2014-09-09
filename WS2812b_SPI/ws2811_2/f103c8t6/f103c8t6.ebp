@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<EmBlocks_project_file>
+	<EmBlocksVersion release="2.20" revision="1" />
+	<FileVersion major="1" minor="0" />
+	<Project>
+		<Option title="f103c8t6" />
+		<Option compiler="armgcc_eb" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\f103c8t6.elf" />
+				<Option object_output="obj\Debug\" />
+				<Option type="0" />
+				<Option create_hex="1" />
+				<Option compiler="armgcc_eb" />
+				<Device>
+					<Add option="$device=cortex-m3" />
+					<Add option="$lscript=./stm32f103c8_flash.ld" />
+					<Add option="$stack=0x0400" />
+					<Add option="$heap=0x0000" />
+				</Device>
+				<Compiler>
+					<Add option="-fno-exceptions" />
+					<Add option="-fno-rtti" />
+					<Add option="-std=gnu++11" />
+					<Add option="-Wall" />
+					<Add option="-fdata-sections" />
+					<Add option="-ffunction-sections" />
+					<Add option="-O0" />
+					<Add option="-g3" />
+					<Add option="-DSTM32F103C8" />
+					<Add option="-DSTM32F10X_MD" />
+					<Add option="-DUSE_STDPERIPH_DRIVER" />
+				</Compiler>
+				<Assembler>
+					<Add option="-Wa,--gdwarf-2" />
+				</Assembler>
+				<Linker>
+					<Add option="-lstdc++" />
+					<Add option="-eb_start_files" />
+					<Add option="-eb_lib=n" />
+					<Add option="-eb_use_semi" />
+					<Add option="-Wl,--cref" />
+					<Add option="-Wl,--gc-sections" />
+					<Add option="-Wl,--no-check-sections" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\f103c8t6.elf" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option create_hex="1" />
+				<Option compiler="armgcc_eb" />
+				<Device>
+					<Add option="$device=cortex-m3" />
+					<Add option="$stack=0x0100" />
+					<Add option="$heap=0x0000" />
+					<Add option="$lscript=./stm32f103c8_flash.ld" />
+				</Device>
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-g2" />
+					<Add option="-fdata-sections" />
+					<Add option="-ffunction-sections" />
+					<Add option="-DSTM32F103C8" />
+					<Add option="-fno-strict-aliasing" />
+					<Add option="-DSTM32F10X_MD" />
+				</Compiler>
+				<Assembler>
+					<Add option="-Wa,--no-warn" />
+				</Assembler>
+				<Linker>
+					<Add option="-Wl,--gc-sections" />
+					<Add option="-eb_start_files" />
+					<Add option="-eb_lib=n" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add directory=".\inc" />
+			<Add directory=".\src" />
+			<Add directory=".\cmsis" />
+			<Add directory=".\SPL\inc" />
+			<Add directory=".\SPL\src" />
+		</Compiler>
+		<Unit filename="SPL\core_cm3.h" />
+		<Unit filename="SPL\core_cmFunc.h" />
+		<Unit filename="SPL\core_cmInstr.h" />
+		<Unit filename="SPL\misc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\misc.h" />
+		<Unit filename="SPL\startup_stm32f10x_md.S">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x.h" />
+		<Unit filename="SPL\stm32f10x_adc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_adc.h" />
+		<Unit filename="SPL\stm32f10x_bkp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_bkp.h" />
+		<Unit filename="SPL\stm32f10x_can.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_can.h" />
+		<Unit filename="SPL\stm32f10x_cec.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_cec.h" />
+		<Unit filename="SPL\stm32f10x_conf.h" />
+		<Unit filename="SPL\stm32f10x_crc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_crc.h" />
+		<Unit filename="SPL\stm32f10x_dac.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_dac.h" />
+		<Unit filename="SPL\stm32f10x_dbgmcu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_dbgmcu.h" />
+		<Unit filename="SPL\stm32f10x_dma.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_dma.h" />
+		<Unit filename="SPL\stm32f10x_exti.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_exti.h" />
+		<Unit filename="SPL\stm32f10x_flash.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_flash.h" />
+		<Unit filename="SPL\stm32f10x_fsmc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_fsmc.h" />
+		<Unit filename="SPL\stm32f10x_gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_gpio.h" />
+		<Unit filename="SPL\stm32f10x_i2c.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_i2c.h" />
+		<Unit filename="SPL\stm32f10x_it.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_it.h" />
+		<Unit filename="SPL\stm32f10x_iwdg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_iwdg.h" />
+		<Unit filename="SPL\stm32f10x_pwr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_pwr.h" />
+		<Unit filename="SPL\stm32f10x_rcc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_rcc.h" />
+		<Unit filename="SPL\stm32f10x_rtc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_rtc.h" />
+		<Unit filename="SPL\stm32f10x_sdio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_sdio.h" />
+		<Unit filename="SPL\stm32f10x_spi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_spi.h" />
+		<Unit filename="SPL\stm32f10x_tim.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_tim.h" />
+		<Unit filename="SPL\stm32f10x_usart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_usart.h" />
+		<Unit filename="SPL\stm32f10x_wwdg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\stm32f10x_wwdg.h" />
+		<Unit filename="SPL\system_stm32f10x.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SPL\system_stm32f10x.h" />
+		<Unit filename="graphics\PixelDisplay.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\PixelDisplay.h">
+			<Option compilerVar="CPP" />
+		</Unit>
+		<Unit filename="graphics\animation.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animation.h" />
+		<Unit filename="graphics\animationDriver.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animationDriver.h" />
+		<Unit filename="graphics\animation_clock.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animation_clock.h" />
+		<Unit filename="graphics\animation_fading.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animation_fading.h" />
+		<Unit filename="graphics\animation_knightRider.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\animation_knightRider.h" />
+		<Unit filename="graphics\graphics.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="graphics\graphics.h" />
+		<Unit filename="hardware\TIM_AnimationDriver.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hardware\TIM_AnimationDriver.h" />
+		<Unit filename="hardware\WS2812SPI.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hardware\WS2812SPI.h" />
+		<Unit filename="hardware\dcf77.cpp">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="hardware\dcf77.h" />
+		<Unit filename="hardware\discoveryLEDs.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="hardware\discoveryLEDs.h" />
+		<Unit filename="hardware\rtc.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="hardware\rtc.h" />
+		<Unit filename="main.cpp">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger>
+				<target_debugging_settings target="Release" active_interface="OpenOCD">
+					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="D:\GIT\github\WS2812b_SPI\openocd-0.8.0\bin" executable="openocd-0.8.0.exe" description="" dont_start_server="false" backoff_time="100" options="6" reg_filter="0" active_family="All">
+						<family_options family_id="All">
+							<option opt_id="ID_BOARD_CH" opt_value="" />
+							<option opt_id="ID_INTERFACE_CH" opt_value="stlink-v2" />
+							<option opt_id="ID_TARGET_CH" opt_value="stm32f1x_stlink" />
+							<option opt_id="ID_TEXTCTRL1" opt_value="1000" />
+							<option opt_id="ID_HW_BKP_LIMIT" opt_value="" />
+							<option opt_id="ID_RESET_CH" opt_value="halt" />
+							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
+							<option opt_id="ID_SEMIHOST_CHECK" opt_value="1" />
+							<option opt_id="ID_ADD_COMMANDS" opt_value="" />
+							<option opt_id="ID_ADD_CMNDS" opt_value="" />
+						</family_options>
+					</debug_interface>
+					<debug_interface interface_id="ST-link" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="">
+						<family_options family_id="STMicroelectronics">
+							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
+							<option opt_id="ID_VECTOR_START" opt_value="0x08000000" />
+							<option opt_id="ID_RESET_TYPE" opt_value="System" />
+							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
+							<option opt_id="ID_SEMIHOST_CHECK" opt_value="1" />
+							<option opt_id="ID_RAM_EXEC" opt_value="0" />
+							<option opt_id="ID_VEC_TABLE" opt_value="1" />
+							<option opt_id="ID_DONT_CONN_RESET" opt_value="0" />
+							<option opt_id="ID_ALL_MODE_DEBUG" opt_value="0" />
+							<option opt_id="ID_DEV_ADDR" opt_value="" />
+							<option opt_id="ID_VERBOSE_LEVEL" opt_value="3" />
+						</family_options>
+					</debug_interface>
+				</target_debugging_settings>
+				<target_debugging_settings target="Debug" active_interface="OpenOCD">
+					<debug_interface interface_id="OpenOCD" ip_address="localhost" ip_port="3333" path="D:\GIT\github\WS2812b_SPI\openocd-0.8.0\bin" executable="openocd-0.8.0.exe" description="SPL\STM32F103xx.svd" dont_start_server="false" backoff_time="1000" options="0" reg_filter="0" active_family="All">
+						<family_options family_id="All">
+							<option opt_id="ID_BOARD_CH" opt_value="" />
+							<option opt_id="ID_INTERFACE_CH" opt_value="stlink-v2" />
+							<option opt_id="ID_TARGET_CH" opt_value="stm32f1x_stlink" />
+							<option opt_id="ID_TEXTCTRL1" opt_value="1000" />
+							<option opt_id="ID_HW_BKP_LIMIT" opt_value="" />
+							<option opt_id="ID_RESET_CH" opt_value="halt" />
+							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
+							<option opt_id="ID_SEMIHOST_CHECK" opt_value="1" />
+							<option opt_id="ID_ADD_COMMANDS" opt_value="" />
+							<option opt_id="ID_ADD_CMNDS" opt_value="" />
+						</family_options>
+					</debug_interface>
+					<debug_interface interface_id="ST-link" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="">
+						<family_options family_id="STMicroelectronics">
+							<option opt_id="ID_JTAG_SWD" opt_value="swd" />
+							<option opt_id="ID_VECTOR_START" opt_value="0x08000000" />
+							<option opt_id="ID_RESET_TYPE" opt_value="System" />
+							<option opt_id="ID_LOAD_PROGRAM" opt_value="1" />
+							<option opt_id="ID_SEMIHOST_CHECK" opt_value="1" />
+							<option opt_id="ID_RAM_EXEC" opt_value="0" />
+							<option opt_id="ID_VEC_TABLE" opt_value="1" />
+							<option opt_id="ID_DONT_CONN_RESET" opt_value="0" />
+							<option opt_id="ID_ALL_MODE_DEBUG" opt_value="0" />
+							<option opt_id="ID_DEV_ADDR" opt_value="" />
+							<option opt_id="ID_VERBOSE_LEVEL" opt_value="3" />
+						</family_options>
+					</debug_interface>
+				</target_debugging_settings>
+			</debugger>
+			<envvars />
+		</Extensions>
+	</Project>
+</EmBlocks_project_file>

@@ -20,3 +20,5 @@ WS2811/WS2811/Debug/obj/stm32f4xx_syscfg.o
 WS2811/WS2811/Debug/obj/stm32f4xx_tim.o
 WS2811/WS2811/Debug/obj/system_stm32f4xx.o
 WS2811/WS2811/WS2811.elf.xcodeproj/project.pbxproj
+*.o
+/WS2812b_SPI/ws2811_2/obj
